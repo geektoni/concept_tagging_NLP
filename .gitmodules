@@ -1,0 +1,3 @@
+[submodule "NL2SparQL4NLU"]
+	path = NL2SparQL4NLU
+	url = https://github.com/geektoni/NL2SparQL4NLU.git
