@@ -13,7 +13,7 @@ lexicon=""
 
 # Usage and version information
 eval "$(docopts -V - -h - : "$@" <<EOF
-Usage: text2fsa <text_string> <lexicon> [<output_fsa>]
+Usage: text2fsa <text_string> [<lexicon>] [<output_fsa>]
 
 Options:
 	<train_data>    Text string which will be converted to an FSA.
@@ -35,8 +35,10 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Check if a name was supplied
-if [ -z ${output_fsa} ]; then output_fsa="converted_string.far"; fi;
+if [ -z ${output_fsa} ]; then output_fsa="converted_string.fsa"; fi;
+
+if [ -z $lexicon ]; then lexicon="lexicon.txt"; fi
 
 # Create the fsa
-echo $text_string | farcompilestrings --symbols=${lexicon} -unknown_symbol='<unk>' --generate_keys=1 --keep_symbols > $output_fsa
-echo "[*] FAR for the string \"$text_string\" was created correctly."
+echo $text_string | farcompilestrings --symbols=$lexicon --unknown_symbol='<unk>' --generate_keys=1 --keep_symbols | farextract --filename_suffix='.fst'
+echo "[*] FSA for the string \"$text_string\" was created correctly."
