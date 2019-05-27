@@ -29,14 +29,17 @@ EOF
 set -euo pipefail
 IFS=$'\n\t'
 
+# Read the training data
 if [ -z $train_data ]; then train_data="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.utterances.txt"; fi
 
-# Generate the lexicon
-cat $train_data | tr ' ' '\n' | sort | uniq > lexicon.txt
+# Generate the lexicon (dumb way)
+cat $train_data | tr ' ' '\n' | sort | uniq > lexicon_base.txt
 echo "[*] Lexicon file was built."
 
 # Generate the lexicon with count
 cat $train_data | tr ' ' '\n' | sort | uniq -c > lexicon_count.txt
 echo "[*] Lexicon file with token counts was built."
 
-
+# Generate lexicon with ngram
+ngramsymbols $train_data lexicon.txt
+echo "[*] Lexicon file with ngramsymbols was built."
