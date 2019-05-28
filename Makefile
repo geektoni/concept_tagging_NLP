@@ -2,8 +2,11 @@ build_lexicon:
 	bash build_lexicon.sh
 	bash build_lexicon.sh --pos
 
-build_test_string: build_lexicon
-	bash utils/text2fsa.sh "who plays luke"
+build_fsa_string_representation: build_lexicon
+	python3 utils/text2fsatxt.py "star of thor"
+
+build_test_string: build_lexicon build_fsa_string_representation
+	bash utils/text2fsa.sh
 
 build_tok_pos_counts:
 	bash utils/compute_token_pos_counts.sh
@@ -19,4 +22,4 @@ check: build_test_string build_lm
 
 clean:
 	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa
-	rm -f *.prob *.counts *.txt *.far *.fsa *.fst *.lm
+	rm -f *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg

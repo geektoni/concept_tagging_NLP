@@ -59,6 +59,12 @@ sed 's/^ *//g;s/ *$//g' > lex.txt
 
 cat TOK_POS.tmp | tail -n +2 > TOK_POS.counts
 
+cat $train_data | cut -f 2 |\
+sed 's/^ *$/#/g' |\
+tr '\n' ' ' |\
+tr '#' '\n' |\
+sed 's/^ *//g;s/ *$//g' > pos_lm_data.txt
+
 # Remove files
 rm POS.tmp TOK_POS.tmp
 

@@ -38,17 +38,17 @@ EOF
 set -euo pipefail
 IFS=$'\n\t'
 
-if [ -z $test_fsa ]; then test_fsa="1.fst"; fi
+if [ -z $test_fsa ]; then test_fsa="converted_string.fsa"; fi
 if [ -z $pos_tagger_fsa ]; then pos_tagger_fsa="pos-tagger.fst"; fi
 if [ -z $unk_tagger ]; then unk_tagger="unkn-tagger.fst"; fi
-if [ -z $pos ]; then test_far="pos.lm"; fi
+if [ -z $pos ]; then pos="pos.lm"; fi
 if [ -z $lexicon ]; then lexicon="lexicon.txt"; fi
 
 fstcompose $test_fsa $pos_tagger_fsa |\
 fstcompose - $pos |\
-fstcompose - $unk_tagger |\
 fstrmepsilon |\
-fstshortestpath > result.fsa
+fstshortestpath |\
+fsttopsort > result.fsa
 
 # Print the result to screen
 if [ -z $stdout ]; then
@@ -56,3 +56,6 @@ if [ -z $stdout ]; then
 else
     fstprint --isymbols=$lexicon --osymbols="lexicon_pos.txt" result.fsa
 fi
+
+fstdraw --isymbols=$lexicon --osymbols=lexicon.txt -portrait $test_fsa | dot -Tjpg -Gdpi=1000 >automata.jpg
+fstdraw --isymbols=$lexicon --osymbols=lexicon_pos.txt -portrait result.fsa | dot -Tjpg -Gdpi=1000 >result.jpg
