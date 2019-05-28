@@ -43,8 +43,10 @@ if [ -z $ngrams ]; then ngrams=3; fi
 if [ -z $method ]; then method="witten_bell"; fi
 
 # Generate the first model
+
+cat UNK_POS.prob >> TOK_POS.prob
 fstcompile --isymbols=lexicon.txt -osymbols=lexicon_pos.txt TOK_POS.prob > pos-tagger.fst
-fstcompile --isymbols=lexicon.txt -osymbols=lexicon_pos.txt UNK_POS.prob > unkn-tagger.fst
+#fstcompile --isymbols=lexicon.txt -osymbols=lexicon_pos.txt UNK_POS.prob > unkn-tagger.fst
 
 # Run fst on the model
 farcompilestrings --symbols=lexicon_pos.txt --unknown_symbol="<unk>" -keep_symbols=1 $train_data > text.far

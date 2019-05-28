@@ -20,6 +20,10 @@ build_lm: build_lexicon build_tok_pos_prob
 check: build_test_string build_lm
 	bash utils/checkAccept.sh
 
+evaluate: clean build_lm
+	bash evaluation/generate_evaluation_data.sh
+	bash evaluation/evaluate.sh
+
 clean:
 	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa
-	rm -f *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg
+	rm -f *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg *.fst_evaluation

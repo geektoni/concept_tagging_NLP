@@ -53,7 +53,7 @@ if __name__ == "__main__":
             unkn.write("0\t0\t<unk>\t{}\t{}\t\n".format(i, log(1.0/tot_tag)))
 
     # Close everything
-    output.write("0\n")
+    #output.write("0\n")
     unkn.write("0\n")
     output.close()
     unkn.close()

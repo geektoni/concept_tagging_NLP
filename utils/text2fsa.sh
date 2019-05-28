@@ -10,10 +10,11 @@
 text_string=""
 output_fsa=""
 lexicon=""
+far=""
 
 # Usage and version information
 eval "$(docopts -V - -h - : "$@" <<EOF
-Usage: text2fsa [<text_string>] [<lexicon>] [<output_fsa>]
+Usage: text2fsa [<text_string>] [<lexicon>] [<output_fsa>] [--far]
 
 Options:
 	<train_data>    Text string which will be converted to an FSA.
@@ -40,5 +41,12 @@ if [ -z ${output_fsa} ]; then output_fsa="converted_string.fsa"; fi;
 if [ -z $lexicon ]; then lexicon="lexicon.txt"; fi
 
 # Create the fsa
-fstcompile --isymbols=$lexicon --osymbols=$lexicon $text_string $output_fsa
-echo "[*] FSA for the string \"$text_string\" was created correctly."
+if [ -z $far ]; then
+    fstcompile --isymbols=$lexicon --osymbols=$lexicon $text_string $output_fsa
+else
+    total=$(cat $text_string|wc -l)
+    cat $text_string |
+    farcompilestrings --symbols=$lexicon --unknown_symbol='<unk>' --generate_keys="${#total}"  --keep_symbols |\
+    farextract --filename_suffix='.fst_evaluation'
+fi
+#echo "[*] FSA for the string \"$(cat $text_string)\" was created correctly."
