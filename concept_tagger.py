@@ -43,14 +43,14 @@ if __name__ == "__main__":
             tok_count = result[2].strip("\n")
 
             # write to file
-            output.write("0\t0\t{}\t{}\t{}\n".format(token, concept, log(float(tok_count)/count)))
+            output.write("0\t0\t{}\t{}\t{}\n".format(token, concept, -log(float(tok_count)/count)))
 
             line = f.readline()
 
         # Generate the file for the unkown probabilities
         tot_tag = pos_c["token"].nunique()
         for i in pos_c["token"].unique():
-            unkn.write("0\t0\t<unk>\t{}\t{}\t\n".format(i, log(1.0/tot_tag)))
+            unkn.write("0\t0\t<unk>\t{}\t{}\t\n".format(i, -log(1.0/41)))
 
     # Close everything
     #output.write("0\n")
