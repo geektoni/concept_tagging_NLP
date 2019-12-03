@@ -12,10 +12,11 @@ export train_data=""
 export test_data=""
 export ngrams=""
 export method=""
+export prune_tresh=""
 
 # Usage and version information
 eval "$(docopts -V - -h - : "$@" <<EOF
-Usage: compute_lm [-nc <ngrams>] [-m <method>] [<train_data>] [<test_data>]
+Usage: compute_lm [-nc <ngrams>] [-m <method>] [-p <prune_thresh>] [<train_data>] [<test_data>]
 
 Options:
 	<train_data>    Train dataset used.
@@ -41,6 +42,9 @@ if [ -z $train_data ]; then train_data="pos_lm_data.txt"; fi
 if [ -z $test_data ]; then test_data="lexicon_test.txt"; fi
 if [ -z $ngrams ]; then ngrams=4; fi
 if [ -z $method ]; then method="witten_bell"; fi
+if [ -z $prune_tresh ]; then prune_thresh=1; fi
+
+echo  "[*] LM Generator ($ngrams, $method)"
 
 # Generate the first model
 
@@ -54,7 +58,7 @@ echo "[*] The LM was generated"
 
 # Compute the ngrams and do frequency cutoff
 ngramcount --order="$ngrams" --require_symbols=false text.far > text.counts
-ngramshrink --method="count_prune" --count_pattern=1:2 text.counts > text_reduced.counts
+ngramshrink --method="count_prune" --count_pattern=$ngrams:$prune_thresh text.counts > text_reduced.counts
 
 # Build the actual LM
 ngrammake --method="$method" text_reduced.counts > pos.lm

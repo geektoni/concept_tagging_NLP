@@ -1,3 +1,7 @@
+NC=4
+METHOD="witten_bell"
+PRUNE_TRESH=1
+
 build_lexicon:
 	bash build_lexicon.sh
 	bash build_lexicon.sh --pos
@@ -15,7 +19,7 @@ build_tok_pos_prob: build_tok_pos_counts
 	python3 concept_tagger.py
 
 build_lm: build_lexicon build_tok_pos_prob
-	bash build_lm.sh
+	bash build_lm.sh -nc $(NC) -m $(METHOD) -p $(PRUNE_TRESH)
 
 check: build_test_string build_lm
 	bash utils/checkAccept.sh
