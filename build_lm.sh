@@ -39,7 +39,7 @@ IFS=$'\n\t'
 
 if [ -z $train_data ]; then train_data="pos_lm_data.txt"; fi
 if [ -z $test_data ]; then test_data="lexicon_test.txt"; fi
-if [ -z $ngrams ]; then ngrams=3; fi
+if [ -z $ngrams ]; then ngrams=4; fi
 if [ -z $method ]; then method="witten_bell"; fi
 
 # Generate the first model
@@ -54,10 +54,10 @@ echo "[*] The LM was generated"
 
 # Compute the ngrams and do frequency cutoff
 ngramcount --order="$ngrams" --require_symbols=false text.far > text.counts
-#ngramshrink --method="count_prune" --count_pattern=1:2 text.counts > text_reduced.counts
+ngramshrink --method="count_prune" --count_pattern=1:2 text.counts > text_reduced.counts
 
 # Build the actual LM
-ngrammake --method="$method" text.counts > pos.lm
+ngrammake --method="$method" text_reduced.counts > pos.lm
 
 #fstdraw -isymbols=lexicon.txt -osymbols=lexicon_pos.txt -portrait pos.lm | dot -Tjpg -Gdpi=1000 >automata.jpg
 #fstprint --isymbols=lexicon.txt -osymbols=lexicon.txt final_result.fsa > output.

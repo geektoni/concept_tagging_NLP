@@ -26,4 +26,4 @@ evaluate: clean build_lm
 
 clean:
 	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa
-	rm -f *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg *.fst_evaluation
+	rm -f *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg evaluation_files/*.fst_evaluation

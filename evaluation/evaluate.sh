@@ -6,6 +6,7 @@ unk_tagger=''
 pos=''
 lexicon=''
 stdout=''
+evaluation_dir=''
 
 # Unofficial strict bash
 set -euo pipefail
@@ -16,12 +17,13 @@ if [ -z $pos_tagger_fsa ]; then pos_tagger_fsa="pos-tagger.fst"; fi
 if [ -z $unk_tagger ]; then unk_tagger="unkn-tagger.fst"; fi
 if [ -z $pos ]; then pos="pos.lm"; fi
 if [ -z $lexicon ]; then lexicon="lexicon.txt"; fi
+if [ -z $evaluation_dir ]; then evaluation_dir="evaluation_files"; fi
 
 # Generate the various fsa
 bash ./utils/text2fsa.sh evaluation_text.txt --far
 
 # Do the evaluation
-for filename in `ls ./*.fst_evaluation`
+for filename in `ls ${evaluation_dir}/*.fst_evaluation`
 do
 
     echo "[*] Processing filename: $filename"

@@ -12,5 +12,6 @@ if __name__ == "__main__":
 
     final_result = pd.concat([text, labels], axis=1)
 
-    final_result.to_csv("final_results.txt", header=None, index=False, sep="\t")
+    final_result.dropna(inplace=True)
 
+    final_result.to_csv("final_results.txt", header=None, index=False, sep="\t")
