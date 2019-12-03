@@ -41,4 +41,4 @@ done
 python3 ./evaluation/generate_evaluation_file.py
 
 # Run conneval
-perl ./evaluation/conlleval.pl -d "\t" < final_results.txt
+perl ./evaluation/conlleval.pl -l -d "\t" < final_results.txt > conlleval_${1:-}.tex
