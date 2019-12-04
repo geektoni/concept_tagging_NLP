@@ -20,13 +20,17 @@ if [ -z $lexicon ]; then lexicon="lexicon.txt"; fi
 if [ -z $evaluation_dir ]; then evaluation_dir="evaluation_files"; fi
 
 # Generate the various fsa
-bash ./utils/text2fsa.sh evaluation_text.txt --far
+if [ -z "$(ls -A $evaluation_dir)" ]; then
+  bash ./utils/text2fsa.sh evaluation_text.txt --far
+else
+  echo "[*] The evaluation dir (${evaluation_dir}) is not empty. Reusing files."
+fi
 
 # Do the evaluation
 for filename in `ls ${evaluation_dir}/*.fst_evaluation`
 do
 
-    echo "[*] Processing filename: $filename"
+    #echo "[*] Processing filename: $filename"
     fstcompose $filename $pos_tagger_fsa |\
     fstcompose - $pos |\
     fstrmepsilon |\
@@ -41,4 +45,4 @@ done
 python3 ./evaluation/generate_evaluation_file.py
 
 # Run conneval
-perl ./evaluation/conlleval.pl -l -d "\t" < final_results.txt > conlleval_${1:-}.tex
+perl ./evaluation/conlleval.pl -d "\t" < final_results.txt > ${2:-}/conlleval_${1:-}.tex

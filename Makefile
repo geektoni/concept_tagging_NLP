@@ -1,6 +1,7 @@
 NC=4
 METHOD="witten_bell"
 PRUNE_TRESH=1
+OUTPUT_DIR="./evaluation_results"
 OUTPUT=$(NC)-$(METHOD)-$(PRUNE_TRESH)
 
 build_lexicon:
@@ -27,7 +28,7 @@ check: build_test_string build_lm
 
 evaluate: clean build_lm
 	bash evaluation/generate_evaluation_data.sh
-	bash evaluation/evaluate.sh $(OUTPUT)
+	bash evaluation/evaluate.sh $(OUTPUT) $(OUTPUT_DIR)
 
 clean:
 	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa
