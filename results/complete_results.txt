@@ -1,0 +1,90 @@
+conlleval_1-absolute-1.tex
+processed 7117 tokens with 1091 phrases; found: 1179 phrases; correct: 654.
+accuracy:  88.84%; precision:  55.47%; recall:  59.95%; FB1:  57.62
+conlleval_1-katz-1.tex
+processed 7117 tokens with 1091 phrases; found: 1179 phrases; correct: 654.
+accuracy:  88.84%; precision:  55.47%; recall:  59.95%; FB1:  57.62
+conlleval_1-kneser_ney-1.tex
+processed 7117 tokens with 1091 phrases; found: 1179 phrases; correct: 654.
+accuracy:  88.84%; precision:  55.47%; recall:  59.95%; FB1:  57.62
+conlleval_1-presmoothed-1.tex
+processed 7117 tokens with 1091 phrases; found: 1179 phrases; correct: 654.
+accuracy:  88.84%; precision:  55.47%; recall:  59.95%; FB1:  57.62
+conlleval_1-unsmoothed:-1.tex
+processed 7117 tokens with 1091 phrases; found: 1179 phrases; correct: 654.
+accuracy:  88.84%; precision:  55.47%; recall:  59.95%; FB1:  57.62
+conlleval_1-witten_bell-1.tex
+processed 7117 tokens with 1091 phrases; found: 1179 phrases; correct: 654.
+accuracy:  88.84%; precision:  55.47%; recall:  59.95%; FB1:  57.62
+conlleval_2-absolute-1.tex
+processed 7117 tokens with 1091 phrases; found: 1032 phrases; correct: 810.
+accuracy:  92.68%; precision:  78.49%; recall:  74.24%; FB1:  76.31
+conlleval_2-katz-1.tex
+processed 7117 tokens with 1091 phrases; found: 1032 phrases; correct: 810.
+accuracy:  92.68%; precision:  78.49%; recall:  74.24%; FB1:  76.31
+conlleval_2-kneser_ney-1.tex
+processed 7117 tokens with 1091 phrases; found: 1032 phrases; correct: 810.
+accuracy:  92.68%; precision:  78.49%; recall:  74.24%; FB1:  76.31
+conlleval_2-presmoothed-1.tex
+processed 7117 tokens with 1091 phrases; found: 1032 phrases; correct: 810.
+accuracy:  92.68%; precision:  78.49%; recall:  74.24%; FB1:  76.31
+conlleval_2-unsmoothed:-1.tex
+processed 7117 tokens with 1091 phrases; found: 1032 phrases; correct: 810.
+accuracy:  92.68%; precision:  78.49%; recall:  74.24%; FB1:  76.31
+conlleval_2-witten_bell-1.tex
+processed 7117 tokens with 1091 phrases; found: 1032 phrases; correct: 810.
+accuracy:  92.68%; precision:  78.49%; recall:  74.24%; FB1:  76.31
+conlleval_3-absolute-1.tex
+processed 7117 tokens with 1091 phrases; found: 1062 phrases; correct: 813.
+accuracy:  92.62%; precision:  76.55%; recall:  74.52%; FB1:  75.52
+conlleval_3-katz-1.tex
+processed 7117 tokens with 1091 phrases; found: 1062 phrases; correct: 813.
+accuracy:  92.62%; precision:  76.55%; recall:  74.52%; FB1:  75.52
+conlleval_3-kneser_ney-1.tex
+processed 7117 tokens with 1091 phrases; found: 1062 phrases; correct: 813.
+accuracy:  92.62%; precision:  76.55%; recall:  74.52%; FB1:  75.52
+conlleval_3-presmoothed-1.tex
+processed 7117 tokens with 1091 phrases; found: 1062 phrases; correct: 813.
+accuracy:  92.62%; precision:  76.55%; recall:  74.52%; FB1:  75.52
+conlleval_3-unsmoothed:-1.tex
+processed 7117 tokens with 1091 phrases; found: 1062 phrases; correct: 813.
+accuracy:  92.62%; precision:  76.55%; recall:  74.52%; FB1:  75.52
+conlleval_3-witten_bell-1.tex
+processed 7117 tokens with 1091 phrases; found: 1062 phrases; correct: 813.
+accuracy:  92.62%; precision:  76.55%; recall:  74.52%; FB1:  75.52
+conlleval_4-absolute-1.tex
+processed 7117 tokens with 1091 phrases; found: 1065 phrases; correct: 820.
+accuracy:  92.86%; precision:  77.00%; recall:  75.16%; FB1:  76.07
+conlleval_4-katz-1.tex
+processed 7117 tokens with 1091 phrases; found: 1065 phrases; correct: 820.
+accuracy:  92.86%; precision:  77.00%; recall:  75.16%; FB1:  76.07
+conlleval_4-kneser_ney-1.tex
+processed 7117 tokens with 1091 phrases; found: 1065 phrases; correct: 820.
+accuracy:  92.86%; precision:  77.00%; recall:  75.16%; FB1:  76.07
+conlleval_4-presmoothed-1.tex
+processed 7117 tokens with 1091 phrases; found: 1065 phrases; correct: 820.
+accuracy:  92.86%; precision:  77.00%; recall:  75.16%; FB1:  76.07
+conlleval_4-unsmoothed:-1.tex
+processed 7117 tokens with 1091 phrases; found: 1065 phrases; correct: 820.
+accuracy:  92.86%; precision:  77.00%; recall:  75.16%; FB1:  76.07
+conlleval_4-witten_bell-1.tex
+processed 7117 tokens with 1091 phrases; found: 1065 phrases; correct: 820.
+accuracy:  92.86%; precision:  77.00%; recall:  75.16%; FB1:  76.07
+conlleval_5-absolute-1.tex
+processed 7117 tokens with 1091 phrases; found: 1070 phrases; correct: 823.
+accuracy:  92.90%; precision:  76.92%; recall:  75.44%; FB1:  76.17
+conlleval_5-katz-1.tex
+processed 7117 tokens with 1091 phrases; found: 1070 phrases; correct: 823.
+accuracy:  92.90%; precision:  76.92%; recall:  75.44%; FB1:  76.17
+conlleval_5-kneser_ney-1.tex
+processed 7117 tokens with 1091 phrases; found: 1070 phrases; correct: 823.
+accuracy:  92.90%; precision:  76.92%; recall:  75.44%; FB1:  76.17
+conlleval_5-presmoothed-1.tex
+processed 7117 tokens with 1091 phrases; found: 1070 phrases; correct: 823.
+accuracy:  92.90%; precision:  76.92%; recall:  75.44%; FB1:  76.17
+conlleval_5-unsmoothed-1.tex
+processed 7117 tokens with 1091 phrases; found: 1070 phrases; correct: 823.
+accuracy:  92.90%; precision:  76.92%; recall:  75.44%; FB1:  76.17
+conlleval_5-witten_bell-1.tex
+processed 7117 tokens with 1091 phrases; found: 1070 phrases; correct: 823.
+accuracy:  92.90%; precision:  76.92%; recall:  75.44%; FB1:  76.17
