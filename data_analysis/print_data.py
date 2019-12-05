@@ -6,6 +6,10 @@ sns.set()
 train = pd.read_csv("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt", delimiter="\t", header=None)[1]
 test = pd.read_csv("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt", delimiter="\t", header=None)[1]
 
+# Get only the tag from the various elements (not IOB)
+train = train.str.split("-", expand=True).fillna("O")[1]
+test = test.str.split("-", expand=True).fillna("O")[1]
+
 # Describe the datasets
 print(train.describe())
 print("")
@@ -28,15 +32,17 @@ for i in missing_elements_test:
 
 plt.figure(figsize=(11,6))
 
-ax = sns.countplot(train, order=train.value_counts().index)
+# Plot the data without looking at the O tag (since it is the most abundant)
+ax = sns.countplot(train[train != "O"], order=train[train != "O"].value_counts().index)
 
 for p in ax.patches:
-    percentage = '{:.1f}%'.format(100 * p.get_height()/len(train))
-    if 5 > (100 * p.get_height()/len(train)):
-        continue
+    percentage = '{:.3f}%'.format(100 * p.get_height()/len(train))
     x = p.get_x()
     y = p.get_y() + p.get_height()+10
-    plt.text(x,y,percentage, rotation=45)
+    if 0.01 > (100 * p.get_height()/len(train)):
+        plt.text(x,y,"<0.01%", rotation=45)
+    else:
+        plt.text(x,y,percentage, rotation=45)
 
 plt.ylabel("Tag Count")
 plt.xlabel("Tag Name")
@@ -45,4 +51,5 @@ plt.xticks(rotation="vertical")
 
 plt.subplots_adjust(left=.07, bottom=.32)
 plt.tight_layout()
-#plt.savefig("result.png", dpi=200)
+#plt.show()
+plt.savefig("result.png", dpi=200)

@@ -35,7 +35,6 @@ IFS=$'\n\t'
 if [ -z $train_data ]; then train_data="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.utterances.txt"; fi
 
 if $pos; then
-    train_data="NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt"
     cat $train_data | cut -f 2 |\
     sed '/ˆ *$/d' |\
     sort | uniq > temp_lexicon.txt

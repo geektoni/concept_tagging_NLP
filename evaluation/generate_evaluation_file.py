@@ -2,7 +2,7 @@ import pandas as pd
 
 if __name__ == "__main__":
 
-    text = pd.read_csv("NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt",
+    text = pd.read_csv("./data_analysis/test_result.csv",
                        header=None, delimiter="\t", skip_blank_lines=False)
     print(text)
 

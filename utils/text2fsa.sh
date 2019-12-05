@@ -18,7 +18,7 @@ eval "$(docopts -V - -h - : "$@" <<EOF
 Usage: text2fsa [<text_string>] [<lexicon>] [<output_fsa>] [--far] [<result_output>]
 
 Options:
-	<train_data>    Text string which will be converted to an FSA.
+	<text_string>   Text string which will be converted to an FSA.
 	<lexicon>       Lexicon used.
 	<output_fsa>    Name of the generated fsa (default: converted_string.far)
 	<result_output> Directory where the files will be saved

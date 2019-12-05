@@ -3,10 +3,12 @@ METHOD="witten_bell"
 PRUNE_TRESH=1
 OUTPUT_DIR="./evaluation_results"
 OUTPUT=$(NC)-$(METHOD)-$(PRUNE_TRESH)
+TRAIN_DATASET="./data_analysis/train_result.csv"
+TEST_DATASET="./data_analysis/test_result.csv"
 
 build_lexicon:
 	bash build_lexicon.sh
-	bash build_lexicon.sh --pos
+	bash build_lexicon.sh $(TRAIN_DATASET) --pos
 
 build_fsa_string_representation: build_lexicon
 	python3 utils/text2fsatxt.py "star of thor"
@@ -15,7 +17,7 @@ build_test_string: build_lexicon build_fsa_string_representation
 	bash utils/text2fsa.sh
 
 build_tok_pos_counts:
-	bash utils/compute_token_pos_counts.sh
+	bash utils/compute_token_pos_counts.sh $(TRAIN_DATASET) $(TEST_DATASET)
 
 build_tok_pos_prob: build_tok_pos_counts
 	python3 concept_tagger.py
@@ -27,7 +29,7 @@ check: build_test_string build_lm
 	bash utils/checkAccept.sh
 
 evaluate: clean build_lm
-	bash evaluation/generate_evaluation_data.sh
+	bash evaluation/generate_evaluation_data.sh $(TEST_DATASET)
 	bash evaluation/evaluate.sh $(OUTPUT) $(OUTPUT_DIR)
 
 clean:
