@@ -60,19 +60,20 @@ The report is detailed as follow: in the first section we define more formally t
 
 \section{Problem Statement}
 Given a sequence of tokens $<t_1, \ldots, t_n>$ and given a pool of concepts $<c_1, \ldots, c_m>$, we want to find the most likely assignment $<t_i, c_i>$ such that it maximizes the following probability:
-\begin{equation*}
+\begin{equation}
 c_1, \ldots, c_n = \argmax_{c_1, \ldots, c_n} P (c_1, \ldots, c_n | t_1, \ldots, t_n)
-\end{equation*}
+\label{frm:argmax}
+\end{equation}
 Thanks to the Markov assumption (the probability of the $i$-th concept depends only on the $(i-1)$-th concept and the probability of the $i$-th token depends only on the $i$-th concept), we can simplify the previous formula. Moreover, we can also compute its component by MLE (Maximum Likelihood Estimation):
-\begin{equation*}
+\begin{equation}
 c_1, \ldots, c_n = \argmax_{c_1, \ldots, c_n} P(t_i|c_i)P(c_i| c_{i-1})
-\end{equation*}
+\label{frm:argmax-markov-assumption}
+\end{equation}
 In the previous formula, $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$ and $P(c_i|c_{i-1}) = \frac{C(c_{i-1}, c_i)}{C(c_i)}$ (where $C(x)$ counts the occurrences of $x$ inside the given dataset). 
 
-\section{Data Analysis}
-The dataset used is called NL2SparQL4NLU. This work used only the "*.conll.txt" files (more specifically, one for training the language model and one for testing it). Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. An analysis of the content of the two files follows:
-\begin{table}[h]
-\centering
+\begin{table*}[b!]
+    \begin{subtable}{.5\linewidth}
+		\centering
 \begin{tabular}{|l|l|}
 \hline
 \multicolumn{2}{|l|}{\textbf{NL2SparQL4NLU.trai.conll.txt}} \\ \hline
@@ -82,10 +83,8 @@ The dataset used is called NL2SparQL4NLU. This work used only the "*.conll.txt" 
 \textit{\# of unique concepts (without the prefix)}  & 24   \\ \hline
 \end{tabular}
 \caption{Description of the content of the train dataset.}
-\label{tab:train-dataset-description}
-\end{table} 
-
-\begin{table}[h]
+\end{subtable}%	
+\begin{subtable}{.5\linewidth}
 \centering
 \begin{tabular}{|l|l|}
 \hline
@@ -97,32 +96,76 @@ The dataset used is called NL2SparQL4NLU. This work used only the "*.conll.txt" 
 \end{tabular}
 \caption{Description of the content of the test dataset.}
 \label{tab:test-dataset-description}
-\end{table} 
+\end{subtable}
+\end{table*} 
+
+\section{Data Analysis}
+
+The dataset used is called NL2SparQL4NLU. This work used only the "*.conll.txt" files (more specifically, one for training the language model and one for testing it). Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. An analysis of the content of the two files follows:
 
 The distribution of the tokens was analyzed. It was found to behave accordingly to the
 Zipf's Law, however, for brevity, it was not reported here since it was not showing 
-anything interesting. The OOV rate for the tokens is around $23.68\%$. There are also
-some tokens which are the results of mispelling (e.g., "dispaly", "Scorcese").
+anything interesting. The OOV rate for the tokens is around $23.68\%$. 
 The distribution of the various concepts was also analyzed (both for the training
-and the test datasets). The distribution of the various concepts is shown in Figure X.
+and the test datasets). The distribution of the various concepts is shown in Figure \ref{fig:concept-distribution}. It is possible to see how the \textit{movie.name} concept is one of the most common (followed by \textit{actor.name} and \textit{person.name}). However, it can also be noted that the ''\textit{O}" concept represent the $70\%$ of the dataset, which represent an issue for the following tagging procedure.
 
-\begin{figure}[t]
-	\begin{subfigure}[b]{0.5\textwidth}
-		\includegraphics[width=\textwidth]{img/train-concepts-distribution}
-		\caption{Train dataset.}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.5\textwidth}
-	\includegraphics[width=\textwidth]{img/test-concepts-distribution}
-	\caption{Test dataset.}
-	\end{subfigure}
-	\caption{Distributions of the various concepts in the train and test datasets. The \textit{O} was removed to make it easier to understand the weight of the others.}
-\end{figure}
+Both train and test set contains concepts which are not present in the other dataset (and viceversa). The train dataset contains \textit{person.nationality} (2 occurrences) and \textit{movie.description} (2 occurrences) which are not present in the test set. The test dataset contains the concept \textit{movie.type} which is missing from the train dataset (4 occurrences). These again could cause mistagging issues and therefore lower the final performance.
+As a final note, there are also
+some tokens which are the results of mispelling (e.g., "dispaly", "Scorcese") which therefore could lead to mistagging.
 
 
 \section{Models}
 
+In this work we devised four separated language models. 
+The first language model was developed by using directly 
+the dataset provided (without any other addition). It 
+implements directly Formula \ref{frm:argmax-markov-
+assumption}. The second model implements a solution 
+provided by Gobbi et al. [add citation]. As the data 
+analysis showed us, the majority of the dataset concepts 
+are "\textit{O}" which are not informative enough. Gobbi 
+et al. proposes to substitute each occurrences of the 
+"\textit{O}" concept with the corresponding lemmatized 
+token such to increase the final performances. 
+The third and fourth models add to their pipelines an 
+entity recognition tool which converts certain token(s) 
+to an entity definition. This entity definition replace 
+the previous token. This improvement was performed such to reduce the variability inside the dataset. Some tokens infact refer to the same entity, while they may have different values (e.g., \textit{nick fury} and \textit{robin} are both character names, even if they have different tokens). See Figure \ref{fig:entity-recognition} for an example of entity recognition.
+
+\begin{figure}[h!]
+\centering
+	\includegraphics[width=1\linewidth]{img/entity}
+	\caption{Example of entity recognition. For instance, the "\textit{ed harris}" tokens were recognized as a PERSON while "\textit{thirteen}" was recognized as number.}
+	\label{fig:entity-recognition}
+\end{figure}
+
+Generally, the entire pipeline was composed by three main components:
+\begin{itemize}
+\item First
+\item Secon
+\item Third
+\end{itemize}
+
 \section{Experiments}
+
+Several experiments were run to assess the quality of 
+the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several smoothing techniques and ngram sizes. Each solution was evaluated by using k-fold cross-validation and the best result was then recorded. Firstly, we evaluated the Language Model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we computed a second improved baseline performance by using the solution provided by Gobbi et al. [add citation]. Ultimately, we evaluated the two SpaCy model variants (dataset with entity recognition and dataset with entity recognition plus "\textit{O}" tags replaced. The results are summarized in Table X.
+
+The code employed for the project is publicy available on Github [add link]. The script were written using Python 3.6 and bash. OpenFST [add citation] and OpenNGRAM [add citation] libraries were used to build the WFST and the language model. SpaCy [add citation] library was used to perform entity recognition.
+The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
+
+\begin{figure*}[h!]
+	\begin{subfigure}[b]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{img/train-concepts-distribution}
+		\caption{Train dataset.}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\linewidth}
+	\includegraphics[width=\textwidth]{img/test-concepts-distribution}
+	\caption{Test dataset.}
+	\end{subfigure}
+	\label{fig:concept-distribution}
+	\caption{Distributions of the various concepts in the train and test datasets. The \textit{O} concept was removed to make it easier to understand the weight of the other concepts.}
+\end{figure*}
 
 \section{Results}
 
