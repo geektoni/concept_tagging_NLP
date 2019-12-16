@@ -10,9 +10,20 @@ TEST_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt"
 LEMMATIZE=
 
 build_dataset:
+ifeq ("$(LEMMATIZE)","--lemmatize True")
 	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) $(LEMMATIZE) $(SPACY)
+	sed -i "s/_NEWLINE\t_NEWLINE/\n/g" ./data_analysis/train_result.csv
+	sed -i "s/_NEWLINE\t_NEWLINE/\n/g" ./data_analysis/test_result.csv
+else
+	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) $(LEMMATIZE) $(SPACY)
+endif
 
 build_lexicon: build_dataset
+ifeq ("$(SPACY)","--spacy True")
+	python3 ./data_analysis/entity_rec.py
+	mv ./data_analysis/train_result_spacy.csv ./data_analysis/train_result.csv
+	mv ./data_analysis/test_result_spacy.csv ./data_analysis/test_result.csv
+endif
 	bash build_lexicon.sh data_analysis/train_result.csv $(VERBOSE)
 	bash build_lexicon.sh data_analysis/train_result.csv --pos $(VERBOSE)
 
@@ -39,5 +50,5 @@ evaluate: clean build_lm
 	bash evaluation/evaluate.sh $(OUTPUT_NAME) $(OUTPUT_DIR) data_analysis/test_result.csv
 
 clean:
-	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa data_analysis/*.csv data_analysis/*.txt
+	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa data_analysis/*.csv
 	rm -f *.tex *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg evaluation_files/*.fst_evaluation *.csv
