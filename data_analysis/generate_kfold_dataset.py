@@ -63,7 +63,7 @@ if __name__ == "__main__":
         train_new = total[fold_size*(i+1):len(total)-1]+total[0:fold_size*i]
         test_new = total[fold_size*i:fold_size*(i+1)]
 
-        write(train_new, "./data_analysis/kfold_train_{}.txt".format(i))
-        write(test_new, "./data_analysis/kfold_test_{}.txt".format(i))
+        write(train_new, "./data_analysis/kfold_train_{}.txt".format(i+1))
+        write(test_new, "./data_analysis/kfold_test_{}.txt".format(i+1))
 
 

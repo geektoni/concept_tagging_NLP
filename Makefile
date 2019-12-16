@@ -1,13 +1,13 @@
 NC=4
 VERBOSE="--verbose"
-SPACY=--spacy
+SPACY=
 METHOD="witten_bell"
 PRUNE_TRESH=1
 OUTPUT_DIR="./evaluation_results"
 OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)
 TRAIN_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt"
 TEST_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt"
-LEMMATIZE=--lemmatize
+LEMMATIZE=
 
 build_dataset:
 	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) $(LEMMATIZE) $(SPACY)
@@ -39,5 +39,5 @@ evaluate: clean build_lm
 	bash evaluation/evaluate.sh $(OUTPUT_NAME) $(OUTPUT_DIR) data_analysis/test_result.csv
 
 clean:
-	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa data_analysis/*.csv
+	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa data_analysis/*.csv data_analysis/*.txt
 	rm -f *.tex *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg evaluation_files/*.fst_evaluation *.csv
