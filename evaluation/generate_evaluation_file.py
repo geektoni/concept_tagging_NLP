@@ -1,8 +1,14 @@
 import pandas as pd
 
+import argparse
+
 if __name__ == "__main__":
 
-    text = pd.read_csv("./data_analysis/test_result.csv",
+    parser = argparse.ArgumentParser(description='Generate evaluation files.')
+    parser.add_argument("--test-file", help="It contains the test data we need to check.", type=str)
+    args = parser.parse_args()
+
+    text = pd.read_csv(args.test_file,
                        header=None, delimiter="\t", skip_blank_lines=False)
     print(text)
 

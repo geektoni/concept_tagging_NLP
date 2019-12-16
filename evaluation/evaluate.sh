@@ -42,7 +42,7 @@ do
 done
 
 # Generate the final result file
-python3 ./evaluation/generate_evaluation_file.py
+python3 ./evaluation/generate_evaluation_file.py --test-file ${3:-}
 
 # Run conneval
 perl ./evaluation/conlleval.pl -d "\t" < final_results.txt > ${2:-}/conlleval_${1:-}.tex
