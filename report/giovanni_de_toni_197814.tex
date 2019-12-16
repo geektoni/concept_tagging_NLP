@@ -71,7 +71,7 @@ c_1, \ldots, c_n = \argmax_{c_1, \ldots, c_n} P(t_i|c_i)P(c_i| c_{i-1})
 \end{equation}
 In the previous formula, $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$ and $P(c_i|c_{i-1}) = \frac{C(c_{i-1}, c_i)}{C(c_i)}$ (where $C(x)$ counts the occurrences of $x$ inside the given dataset). 
 
-\begin{table*}[b!]
+\begin{table*}
     \begin{subtable}{.5\linewidth}
 		\centering
 \begin{tabular}{|l|l|}
@@ -82,7 +82,7 @@ In the previous formula, $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$ and $P(c_i|c_
 \textit{\# of unique tokens}                         & 1728 \\ \hline
 \textit{\# of unique concepts (without the prefix)}  & 24   \\ \hline
 \end{tabular}
-\caption{Description of the content of the train dataset.}
+\caption{Train dataset.}
 \end{subtable}%	
 \begin{subtable}{.5\linewidth}
 \centering
@@ -94,9 +94,10 @@ In the previous formula, $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$ and $P(c_i|c_
 \textit{\# of unique tokens}                         & 1039 \\ \hline
 \textit{\# of unique concepts (without the prefix)}  & 23   \\ \hline
 \end{tabular}
-\caption{Description of the content of the test dataset.}
+\caption{Test dataset.}
 \label{tab:test-dataset-description}
 \end{subtable}
+\caption{Description of the content of the dataset used.}
 \end{table*} 
 
 \section{Data Analysis}
@@ -116,6 +117,13 @@ some tokens which are the results of mispelling (e.g., "dispaly", "Scorcese") wh
 
 \section{Models}
 
+\begin{figure}[b!]
+\centering
+	\includegraphics[width=1\linewidth]{img/entity}
+	\caption{Example of entity recognition. For instance, the "\textit{ed harris}" tokens were recognized as a PERSON while "\textit{thirteen}" was recognized as number.}
+	\label{fig:entity-recognition}
+\end{figure}
+
 In this work we devised four separated language models. 
 The first language model was developed by using directly 
 the dataset provided (without any other addition). It 
@@ -130,31 +138,12 @@ token such to increase the final performances.
 The third and fourth models add to their pipelines an 
 entity recognition tool which converts certain token(s) 
 to an entity definition. This entity definition replace 
-the previous token. This improvement was performed such to reduce the variability inside the dataset. Some tokens infact refer to the same entity, while they may have different values (e.g., \textit{nick fury} and \textit{robin} are both character names, even if they have different tokens). See Figure \ref{fig:entity-recognition} for an example of entity recognition.
+the previous token. This improvement was performed such to reduce the variability inside the dataset. 
+Some tokens infact refer to the same entity, while they may have different values (e.g., \textit{nick fury} and \textit{robin} are both character names, even if they have different tokens). See Figure \ref{fig:entity-recognition} for an example of entity recognition.
 
-\begin{figure}[h!]
-\centering
-	\includegraphics[width=1\linewidth]{img/entity}
-	\caption{Example of entity recognition. For instance, the "\textit{ed harris}" tokens were recognized as a PERSON while "\textit{thirteen}" was recognized as number.}
-	\label{fig:entity-recognition}
-\end{figure}
 
-Generally, the entire pipeline was composed by three main components:
-\begin{itemize}
-\item First
-\item Secon
-\item Third
-\end{itemize}
 
-\section{Experiments}
-
-Several experiments were run to assess the quality of 
-the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several smoothing techniques and ngram sizes. Each solution was evaluated by using k-fold cross-validation and the best result was then recorded. Firstly, we evaluated the Language Model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we computed a second improved baseline performance by using the solution provided by Gobbi et al. [add citation]. Ultimately, we evaluated the two SpaCy model variants (dataset with entity recognition and dataset with entity recognition plus "\textit{O}" tags replaced. The results are summarized in Table X.
-
-The code employed for the project is publicy available on Github [add link]. The script were written using Python 3.6 and bash. OpenFST [add citation] and OpenNGRAM [add citation] libraries were used to build the WFST and the language model. SpaCy [add citation] library was used to perform entity recognition.
-The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
-
-\begin{figure*}[h!]
+\begin{figure*}
 	\begin{subfigure}[b]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{img/train-concepts-distribution}
 		\caption{Train dataset.}
@@ -166,6 +155,35 @@ The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM.
 	\label{fig:concept-distribution}
 	\caption{Distributions of the various concepts in the train and test datasets. The \textit{O} concept was removed to make it easier to understand the weight of the other concepts.}
 \end{figure*}
+
+\subsection{Spoken Language Understanding Pipeline}
+The entire pipeline is composed of two main components.
+\subsubsection{Concept Tagger (WFST)}
+It is a transducer which encodes the probability $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$. The probability (score) is the weigth given to the transition from the given token to the concept. In order to solve possible numerical stability issue, the negative log was applied to the probability. Therefore, the weigth assigned to the transitions is computed by using $-log(P(t_i|c_i))$. An additional token called $<$\textit{unk}$>$ was added to the transducer to account for unknown words (namely, tokens which are present in the test dataset, but not in the train dataset). Moreover, for each of the possible concepts $c_i$, a transition $c_i$:$<$\textit{unk}$>$ was added with a score of $\frac{1}{\#concepts}$ (this means that each unknown token has an equal probability of "represeting" each concepts). 
+\begin{figure}[b!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{img/pos-tagger}
+	\caption{Example of a possible transducer in which the token \textit{amazing} is mapped to the concept \textit{I-movie.name} with an associated transition score.}
+\end{figure}
+
+\subsection{Language Model (LM)}
+It is a transducer which encodes the probability $P(c_i|c_{i-1}) = \frac{C(c_{i-1}, c_i)}{C(c_i)}$, which mean finding a concept $c_i$ conditioned on having seen concept $c_{i-1}$. 
+
+\subsection{Final SLU Model}
+
+The previous components needs to be composed together to be used. The sentence we want to tag needs to be transformed into a FST and then it will be composed with the previouse outlined components:
+\begin{equation}
+\lambda_{CT} = \lambda_{sentence} \circ \lambda_{WFST} \circ \lambda_{LM}
+\end{equation}
+Then, we need to find the path which minimize the cost within the final transducer (since we are using $-log()$ to compute the weigths, minimizing the path cost is the equivalent of maximizing the probability of that tagging sequence). This final operation corresponds to computing the equation \ref{frm:argmax-markov-assumption}.
+
+\section{Experiments}
+
+Several experiments were run to assess the quality of 
+the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several smoothing techniques and ngram sizes. Each solution was evaluated by using k-fold cross-validation and the best result was then recorded. Firstly, we evaluated the Language Model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we computed a second improved baseline performance by using the solution provided by Gobbi et al. [add citation]. Ultimately, we evaluated the two SpaCy model variants (dataset with entity recognition and dataset with entity recognition plus "\textit{O}" tags replaced. The results are summarized in Table X.
+
+The code employed for the project is publicy available on Github [add link]. The script were written using Python 3.6 and bash. OpenFST [add citation] and OpenNGRAM [add citation] libraries were used to build the WFST and the language model. SpaCy [add citation] library was used to perform entity recognition.
+The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
 
 \section{Results}
 
