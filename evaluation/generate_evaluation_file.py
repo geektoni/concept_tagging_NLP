@@ -9,7 +9,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     text = pd.read_csv(args.test_file,
-                       header=None, delimiter="\t", skip_blank_lines=False)
+                       header=None, delimiter="\t", skip_blank_lines=False, engine="python")
     print(text)
 
     labels = pd.read_csv("./predicted.txt", header=None, delimiter="\t", skip_blank_lines=False)

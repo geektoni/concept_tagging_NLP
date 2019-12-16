@@ -4,10 +4,23 @@ SPACY=
 METHOD="witten_bell"
 PRUNE_TRESH=1
 OUTPUT_DIR="./evaluation_results"
-OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)
 TRAIN_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt"
 TEST_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt"
 LEMMATIZE=
+
+ifeq ("$(LEMMATIZE)","--lemmatize True")
+	LEMMA=lemma_on
+else
+	LEMMA=lemma_off
+endif
+
+ifeq ("$(SPACY)","--spacy True")
+	SPACY_ON=spacy_on
+else
+	SPACY_ON=spacy_off
+endif
+
+OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-${LEMMA}-${SPACY_ON}
 
 build_dataset:
 ifeq ("$(LEMMATIZE)","--lemmatize True")

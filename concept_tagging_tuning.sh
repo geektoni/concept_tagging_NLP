@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SPACY=("" "--spacy True")
+LEMMATIZE=("" "--lemmatize True")
 NGRAMS=(4)
 METHODS=( "witten_bell" "absolute" "katz" "kneser_ney" "presmoothed" "unsmoothed" )
 KFOLD=5
@@ -19,28 +21,41 @@ for ng in ${NGRAMS[@]}
 do
   for m in ${METHODS[@]}
     do
-      for i in $(seq 1 $KFOLD);
+      for s in ${SPACY[@]}
       do
+        for l in ${LEMMATIZE[@]}
+        do
+          for i in $(seq 1 $KFOLD);
+          do
+            spacy_on="spacy_off"
+            if [ ${s} = "--spacy True" ]; then
+              spacy_on="spacy_on"
+            fi
 
-        make NC=${ng} METHOD=${m} TRAIN_DATASET=./data_analysis/kfold_train_$i.txt TEST_DATASET=./data_analysis/kfold_test_$i.txt evaluate
+            lemma_on="lemma_off"
+            if [ ${l} = "--lemmatize True" ]; then
+              lemma_on="lemma_on"
+            fi
 
-        # Get the accuracy result from the file
-        eval=`cat evaluation_results/conlleval_${ng}-${m}-1.txt | head -2 | tail -1 | /usr/bin/tr ";" "\n" | tail -1 | /usr/bin/tr ": " "\n" | tail -1`
+            make NC=${ng} METHOD=${m} SPACY=${s} LEMMATIZE=${l} TRAIN_DATASET=./data_analysis/kfold_train_$i.txt TEST_DATASET=./data_analysis/kfold_test_$i.txt evaluate
 
-        echo "$eval" >> ./evaluation_results/${ng}-${m}-1_kfold.txt
+            # Get the accuracy result from the file
+            eval=`cat evaluation_results/conlleval_${ng}-${m}-1-${lemma_on}-${spacy_on}.txt | head -2 | tail -1 | /usr/bin/tr ";" "\n" | tail -1 | /usr/bin/tr ": " "\n" | tail -1`
 
-        make clean
+            echo "$eval" >> ./evaluation_results/${ng}-${m}-1-${lemma_on}-${spacy_on}-kfold.txt
+
+            make clean
+          done
+          # Compute the final performance
+          awk '{s+=$1}END{print s/NR}' RS="\n" ./evaluation_results/${ng}-${m}-1-${lemma_on}-${spacy_on}-kfold.txt > ./evaluation_results/${ng}-${m}-1-${lemma_on}-${spacy_on}-evaluation.txt
+        done
       done
     done
-
-    # Compute the final performance
-    awk '{s+=$1}END{print s/NR}' RS="\n" ./evaluation_results/${ng}-${m}-1.txt > ./evaluation_results/${ng}-${m}-1_evaluation.txt
-
 done
 
 # Generate a lighter version of the results
-for f in `ls ./evaluation_results`
-do  
-  echo ${f} >> complete_results.txt
-  head -n 2 ./evaluation_results/${f} >> complete_results.txt
+for f in `ls ./evaluation_results/*-evaluation.txt`
+do
+  value=`cat ${f}`
+  echo ${f}, ${value} >> complete_results.txt
 done
