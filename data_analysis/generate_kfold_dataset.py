@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 import argparse
+from tqdm import tqdm
 
 def parse_file(filename):
     with open(filename, "r") as f:
@@ -28,16 +29,14 @@ def parse_file(filename):
             # We reached the end of the file
             if not line:
                 is_phrase = False
+    return total_phrase
 
 def write(data, filename):
     with open(filename, "w+") as output:
-        for i in range(len(data)):
-            for d in data:
-                text_splitted = d[0].split(" ")
-                conc_splitted = d[1].split(" ")
-                for w in range(len(text_splitted)):
-                    output.write("{}\t{}\n".format(text_splitted[w], conc_splitted[w]))
-                output.write("\n")
+        for e in data:
+            for w in zip(e[0], e[1]):
+                output.write("{}\t{}\n".format(w[0], w[1]))
+            output.write("\n")
 
 
 if __name__ == "__main__":
@@ -46,6 +45,7 @@ if __name__ == "__main__":
     parser.add_argument("--test-file", help="Train dataset", type=str)
     parser.add_argument("--train-file", help="Test dataset", type=str)
     parser.add_argument("--seed", help="Seed", type=int, default=42)
+    parser.add_argument("--kfold", help="Kfold size", type=int, default=5)
 
     args = parser.parse_args()
 
@@ -58,10 +58,12 @@ if __name__ == "__main__":
 
     random.shuffle(total)
 
-    train_new = total[:len(total)*0.7]
-    test_new = total[len(total)*0.7:]
+    fold_size = len(total) // args.kfold
+    for i in range(0, args.kfold):
+        train_new = total[fold_size*(i+1):len(total)-1]+total[0:fold_size*i]
+        test_new = total[fold_size*i:fold_size*(i+1)]
 
-    write(train_new, "kfold_train.txt")
-    write(test_new, "kfold_test.txt")
+        write(train_new, "./data_analysis/kfold_train_{}.txt".format(i))
+        write(test_new, "./data_analysis/kfold_test_{}.txt".format(i))
 
 
