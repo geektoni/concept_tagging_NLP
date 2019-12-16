@@ -30,26 +30,30 @@ print(missing_elements_test)
 for i in missing_elements_test:
     print(i, train[ train == i ].count(), train[ train == i ].count()/len(train))
 
-plt.figure(figsize=(11,6))
+index=1
+for data in [train, test]:
 
-# Plot the data without looking at the O tag (since it is the most abundant)
-ax = sns.countplot(train[train != "O"], order=train[train != "O"].value_counts().index)
+    plt.figure(figsize=(11,6))
 
-for p in ax.patches:
-    percentage = '{:.3f}%'.format(100 * p.get_height()/len(train))
-    x = p.get_x()
-    y = p.get_y() + p.get_height()+10
-    if 0.01 > (100 * p.get_height()/len(train)):
-        plt.text(x,y,"<0.01%", rotation=45)
-    else:
-        plt.text(x,y,percentage, rotation=45)
+    # Plot the data without looking at the O tag (since it is the most abundant)
+    ax = sns.countplot(data[data != "O"], order=data[data != "O"].value_counts().index)
 
-plt.ylabel("Tag Count")
-plt.xlabel("Tag Name")
+    for p in ax.patches:
+        percentage = '{:.3f}%'.format(100 * p.get_height()/len(data))
+        x = p.get_x()
+        y = p.get_y() + p.get_height()+10
+        if 0.01 > (100 * p.get_height()/len(data)):
+            plt.text(x,y,"<0.01%", rotation=45, fontsize=20)
+        else:
+            plt.text(x,y,percentage, rotation=45, fontsize=20)
 
-plt.xticks(rotation="vertical")
+    plt.ylabel("")
+    plt.xlabel("")
 
-plt.subplots_adjust(left=.07, bottom=.32)
-plt.tight_layout()
-#plt.show()
-plt.savefig("result.png", dpi=200)
+    plt.yticks(fontsize=20)
+    plt.xticks(rotation="vertical", fontsize=20)
+
+    plt.subplots_adjust(left=.07, bottom=.32)
+    plt.tight_layout()
+    plt.savefig("result_{}.png".format(index), dpi=200)
+    index += 1
