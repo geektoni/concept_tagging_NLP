@@ -28,14 +28,14 @@ if [ -z $test_data ]; then test_data="NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.c
 # Generate test phrases and labels
 cat $test_data | cut -f 2 |\
 sed 's/^ *$/#/g' |\
-tr '\n' ' ' |\
-tr '#' '\n' |\
+/usr/bin/tr '\n' ' ' |\
+/usr/bin/tr '#' '\n' |\
 sed 's/^ *//g;s/ *$//g' > evaluation_labels.txt
 
 cat $test_data | cut -f 1 |\
 sed 's/^ *$/#/g' |\
-tr '\n' ' ' |\
-tr '#' '\n' |\
+/usr/bin/tr '\n' ' ' |\
+/usr/bin/tr '#' '\n' |\
 sed 's/^ *//g;s/ *$//g' > evaluation_text.txt
 
 

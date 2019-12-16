@@ -53,16 +53,16 @@ awk '{OFS="\t"; print $2,$3,$1}' > TOK_POS.tmp
 # Dataset for the second transducer
 cat $train_data | cut -f 2 |\
 awk '!NF{$0="#"}1' |\
-tr '\n' ' ' |\
-tr '#' '\n' |\
+/usr/bin/tr '\n' ' ' |\
+/usr/bin/tr '#' '\n' |\
 sed 's/^ *//g;s/ *$//g' > lex.txt
 
 cat TOK_POS.tmp | tail -n +2 > TOK_POS.counts
 
 cat $train_data | cut -f 2 |\
 sed 's/^ *$/#/g' |\
-tr '\n' ' ' |\
-tr '#' '\n' |\
+/usr/bin/tr '\n' ' ' |\
+/usr/bin/tr '#' '\n' |\
 sed 's/^ *//g;s/ *$//g' > pos_lm_data.txt
 
 # Remove files

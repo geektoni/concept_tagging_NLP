@@ -45,11 +45,11 @@ else
 fi
 
 # Generate the lexicon (dumb way)
-cat $train_data | tr ' ' '\n' | sort | uniq > lexicon_base.txt
+cat $train_data | /usr/bin/tr ' ' '\n' | sort | uniq > lexicon_base.txt
 echo "[*] Lexicon file was built."
 
 # Generate the lexicon with count
-cat $train_data | tr ' ' '\n' | sort | uniq -c > lexicon_count.txt
+cat $train_data | /usr/bin/tr ' ' '\n' | sort | uniq -c > lexicon_count.txt
 echo "[*] Lexicon file with token counts was built."
 
 # Generate lexicon with ngram
