@@ -13,10 +13,11 @@ export test_data=""
 export ngrams=""
 export method=""
 export prune_tresh=""
+export example=""
 
 # Usage and version information
 eval "$(docopts -V - -h - : "$@" <<EOF
-Usage: compute_lm [-nc <ngrams>] [-m <method>] [-p <prune_thresh>] [<train_data>] [<test_data>]
+Usage: compute_lm [-nc <ngrams>] [-m <method>] [-p <prune_thresh>] [<train_data>] [<test_data>] [--example]
 
 Options:
 	<train_data>    Train dataset used.
@@ -39,7 +40,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 if [ -z $train_data ]; then train_data="pos_lm_data.txt"; fi
-if [ -z $test_data ]; then test_data="lexicon_test.txt"; fi
+if [ -z $test_data ]; then test_data="lexicon_pos.txt"; fi
 if [ -z $ngrams ]; then ngrams=4; fi
 if [ -z $method ]; then method="witten_bell"; fi
 if [ -z $prune_tresh ]; then prune_thresh=1; fi
@@ -51,6 +52,16 @@ echo  "[*] LM Generator ($ngrams, $method)"
 cat UNK_POS.prob >> TOK_POS.prob
 fstcompile --isymbols=lexicon.txt -osymbols=lexicon_pos.txt TOK_POS.prob > pos-tagger.fst
 #fstcompile --isymbols=lexicon.txt -osymbols=lexicon_pos.txt UNK_POS.prob > unkn-tagger.fst
+
+# Generate a simple image which shows a transducer
+if [ ! -z $example ]; then
+  echo -e "0	0	amazing	I-movie.name	6.083929774780076 \n0" > TOK_POS_draw.prob
+  echo "amazing 0" > lexicon_draw.txt
+  echo "I-movie.name 0" > lexicon_pos_draw.txt
+  fstcompile --isymbols=lexicon_draw.txt -osymbols=lexicon_pos_draw.txt TOK_POS_draw.prob > pos-tagger-draw.fst
+  fstdraw --isymbols=lexicon_draw.txt --osymbols=lexicon_pos_draw.txt -portrait pos-tagger-draw.fst | dot -Tjpg -Gdpi=100 > pos-tagger.jpg
+  exit 0
+fi
 
 # Run fst on the model
 farcompilestrings --symbols=lexicon_pos.txt --unknown_symbol="<unk>" -keep_symbols=1 $train_data > text.far
