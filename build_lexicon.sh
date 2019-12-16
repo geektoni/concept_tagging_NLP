@@ -9,10 +9,11 @@
 train_data=""
 pos=""
 output_name=""
+verbose=""
 
 # Usage and version information
 eval "$(docopts -V - -h - : "$@" <<EOF
-Usage: build_lexicon [<train_data>] [--pos]
+Usage: build_lexicon [<train_data>] [--pos] [--verbose]
 
 Options:
 	<train_data>    Train dataset used.
@@ -46,12 +47,18 @@ fi
 
 # Generate the lexicon (dumb way)
 cat $train_data | /usr/bin/tr ' ' '\n' | sort | uniq > lexicon_base.txt
-echo "[*] Lexicon file was built."
+if [ ! -z $verbose ]; then
+  echo "[*] Lexicon file was built."
+fi
 
 # Generate the lexicon with count
 cat $train_data | /usr/bin/tr ' ' '\n' | sort | uniq -c > lexicon_count.txt
-echo "[*] Lexicon file with token counts was built."
+if [ ! -z $verbose ]; then
+  echo "[*] Lexicon file with token counts was built."
+fi
 
 # Generate lexicon with ngram
 ngramsymbols $train_data $output_name
-echo "[*] Lexicon file with ngramsymbols was built to $output_name"
+if [ ! -z $verbose ]; then
+  echo "[*] Lexicon file with ngramsymbols was built to $output_name"
+fi

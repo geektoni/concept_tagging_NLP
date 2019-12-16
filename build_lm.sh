@@ -14,16 +14,18 @@ export ngrams=""
 export method=""
 export prune_tresh=""
 export example=""
+export verbose=""
 
 # Usage and version information
 eval "$(docopts -V - -h - : "$@" <<EOF
-Usage: compute_lm [-nc <ngrams>] [-m <method>] [-p <prune_thresh>] [<train_data>] [<test_data>] [--example]
+Usage: compute_lm [-nc <ngrams>] [-m <method>] [-p <prune_thresh>] [<train_data>] [<test_data>] [--example] [--verbose]
 
 Options:
 	<train_data>    Train dataset used.
 	<test_data>     Test dataset used.
 	-nc <ngrams>    Size of n-grams.
 	-m <method>     Method used for discounting.
+	--verbose
 	--help			Show help options.
 	--version		Print program version.
 ----
@@ -45,7 +47,9 @@ if [ -z $ngrams ]; then ngrams=4; fi
 if [ -z $method ]; then method="witten_bell"; fi
 if [ -z $prune_tresh ]; then prune_thresh=1; fi
 
-echo  "[*] LM Generator ($ngrams, $method)"
+if [ ! -z $verbose ]; then
+  echo  "[*] LM Generator ($ngrams, $method)"
+fi
 
 # Generate the first model
 
@@ -65,7 +69,9 @@ fi
 
 # Run fst on the model
 farcompilestrings --symbols=lexicon_pos.txt --unknown_symbol="<unk>" -keep_symbols=1 $train_data > text.far
-echo "[*] The LM was generated"
+if [ ! -z $verbose ]; then
+  echo "[*] The LM was generated"
+fi
 
 # Compute the ngrams and do frequency cutoff
 ngramcount --order="$ngrams" --require_symbols=false text.far > text.counts

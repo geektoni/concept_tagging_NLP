@@ -23,24 +23,30 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate the dataset we need to use.')
     parser.add_argument("--train-file", help="Train dataset.", type=str)
     parser.add_argument("--test-file", help="Test dataset.", type=str)
+    parser.add_argument("--lemmatize", help="Lemmatize and replace O concept.", type=bool)
+    parser.add_argument("--spacy", help="Spacy and replace O concept.", type=bool)
     args = parser.parse_args()
 
-    train = pd.read_csv(args.train_file, delimiter="\t", header=None)
-    test = pd.read_csv(args.train_file, delimiter="\t", header=None)
+    train = pd.read_csv(args.train_file, delimiter="\t", header=None, skip_blank_lines=False)
+    test = pd.read_csv(args.test_file, delimiter="\t", header=None, skip_blank_lines=False)
 
-    lemma=False
-    if lemma:
+    print(args)
+
+    if args.lemmatize:
 
         train = pd.read_csv(args.train_file, delimiter="\t", header=None, skip_blank_lines=False).fillna("_NEWLINE")
-        test = pd.read_csv(args.train_file, delimiter="\t", header=None, skip_blank_lines=False).fillna("_NEWLINE")
+        test = pd.read_csv(args.test_file, delimiter="\t", header=None, skip_blank_lines=False).fillna("_NEWLINE")
 
         # Apply the first transformation to the dataset
         train[2] = train.apply(lemmatize_text, axis=1)
         test[2] = test.apply(lemmatize_text, axis=1)
 
-        train[[0, 2]].to_csv("train_result_no_O.csv", sep="\t", header=False, index=False)
-        test[[0, 2]].to_csv("test_result_no_O.csv", sep="\t", header=False, index=False)
-    else:
+        print(train)
+
+        train[[0, 2]].to_csv("./data_analysis/train_result.csv", sep="\t", header=False, index=False)
+        test[[0, 2]].to_csv("./data_analysis/test_result.csv", sep="\t", header=False, index=False)
+
+    elif args.spacy:
         for original_dataset in [("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt", "train"),
                                  ("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt", "test")]:
             total_words= []
@@ -99,8 +105,11 @@ if __name__ == "__main__":
                     if not line:
                         is_phrase = False
 
-            with open("{}_result.csv".format(original_dataset[1]), "w+") as output:
+            with open("./data_analysis/{}_result.csv".format(original_dataset[1]), "w+") as output:
                 for i in range(len(total_words)):
                     for w, c in zip(total_words[i], total_concepts[i]):
                         output.write("{}\t{}\n".format(w, c))
                     output.write("\n")
+    else:
+        train.to_csv("./data_analysis/train_result.csv", sep="\t", header=False, index=False)
+        test.to_csv("./data_analysis/test_result.csv", sep="\t", header=False, index=False)
