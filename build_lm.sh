@@ -54,7 +54,7 @@ fstcompile --isymbols=lexicon.txt -osymbols=lexicon_pos.txt TOK_POS.prob > pos-t
 #fstcompile --isymbols=lexicon.txt -osymbols=lexicon_pos.txt UNK_POS.prob > unkn-tagger.fst
 
 # Generate a simple image which shows a transducer
-if [ ! -z $example ]; then
+if [ -z $example ]; then
   echo -e "0	0	amazing	I-movie.name	6.083929774780076 \n0" > TOK_POS_draw.prob
   echo "amazing 0" > lexicon_draw.txt
   echo "I-movie.name 0" > lexicon_pos_draw.txt
