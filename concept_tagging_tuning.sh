@@ -1,8 +1,9 @@
 #!/bin/bash
 
-SPACY=("" "--spacy True")
-LEMMATIZE=("" "--lemmatize True")
-NGRAMS=(4)
+SPACY=("OFF" "ON")
+LEMMATIZE=("OFF" "ON")
+STEMMER=("OFF" "ON")
+NGRAMS=( 4 )
 METHODS=( "witten_bell" "absolute" "katz" "kneser_ney" "presmoothed" "unsmoothed" )
 KFOLD=5
 
@@ -25,37 +26,32 @@ do
       do
         for l in ${LEMMATIZE[@]}
         do
-          for i in $(seq 1 $KFOLD);
+          for st in ${STEMMER[@]}
           do
-            spacy_on="spacy_off"
-            if [ ${s} = "--spacy True" ]; then
-              spacy_on="spacy_on"
-            fi
+            for i in $(seq 1 $KFOLD);
+            do
+              make NC=${ng} METHOD=${m} SPACY=${s} LEMMATIZE=${l} STEMMER=${st} TRAIN_DATASET=./data_analysis/kfold_train_$i.txt TEST_DATASET=./data_analysis/kfold_test_$i.txt evaluate
 
-            lemma_on="lemma_off"
-            if [ ${l} = "--lemmatize True" ]; then
-              lemma_on="lemma_on"
-            fi
+              # Get the accuracy result from the file
+              eval=`cat evaluation_results/conlleval_${ng}-${m}-1-${l}-${s}-${st}.txt | head -2 | tail -1 | /usr/bin/tr ";" "\n" | tail -1 | /usr/bin/tr ": " "\n" | tail -1`
 
-            make NC=${ng} METHOD=${m} SPACY=${s} LEMMATIZE=${l} TRAIN_DATASET=./data_analysis/kfold_train_$i.txt TEST_DATASET=./data_analysis/kfold_test_$i.txt evaluate
+              echo "$eval" >> ./evaluation_results/${ng}-${m}-1-${l}-${s}-${st}-kfold.txt
 
-            # Get the accuracy result from the file
-            eval=`cat evaluation_results/conlleval_${ng}-${m}-1-${lemma_on}-${spacy_on}.txt | head -2 | tail -1 | /usr/bin/tr ";" "\n" | tail -1 | /usr/bin/tr ": " "\n" | tail -1`
-
-            echo "$eval" >> ./evaluation_results/${ng}-${m}-1-${lemma_on}-${spacy_on}-kfold.txt
-
-            make clean
+              make clean
+            done
+             # Compute the final performance
+            awk '{s+=$1}END{print s/NR}' RS="\n" ./evaluation_results/${ng}-${m}-1-${l}-${s}-${st}-kfold.txt > ./evaluation_results/${ng}-${m}-1-${l}-${s}-${st}-evaluation.txt
           done
-          # Compute the final performance
-          awk '{s+=$1}END{print s/NR}' RS="\n" ./evaluation_results/${ng}-${m}-1-${lemma_on}-${spacy_on}-kfold.txt > ./evaluation_results/${ng}-${m}-1-${lemma_on}-${spacy_on}-evaluation.txt
         done
       done
     done
 done
 
 # Generate a lighter version of the results
+cat "ngram size,smoothing,lemmatize, stemming, use entity resolution, k-fold F1 score" complete_results.txt
 for f in `ls ./evaluation_results/*-evaluation.txt`
 do
+  file_name=`basename ${f} -evaluation.txt | tr "-" ","`
   value=`cat ${f}`
   echo ${f}, ${value} >> complete_results.txt
 done

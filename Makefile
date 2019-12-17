@@ -1,38 +1,35 @@
 NC=4
 VERBOSE="--verbose"
-SPACY=
+SPACY=OFF
 METHOD="witten_bell"
 PRUNE_TRESH=1
 OUTPUT_DIR="./evaluation_results"
 TRAIN_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt"
 TEST_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt"
-LEMMATIZE=
+LEMMATIZE=OFF
+STEMMER=OFF
 
-ifeq ("$(LEMMATIZE)","--lemmatize True")
-	LEMMA=lemma_on
+ifeq ("$(LEMMATIZE)","ON")
+	LEMMA=--lemmatize
 else
-	LEMMA=lemma_off
+	LEMMA=
 endif
 
-ifeq ("$(SPACY)","--spacy True")
-	SPACY_ON=spacy_on
+ifeq ("$(STEMMER)","ON")
+	STEM=--stemmer
 else
-	SPACY_ON=spacy_off
+	STEM=
 endif
 
-OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-${LEMMA}-${SPACY_ON}
+OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-$(LEMMATIZE)-$(SPACY)-$(STEMMER)
 
 build_dataset:
-ifeq ("$(LEMMATIZE)","--lemmatize True")
-	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) $(LEMMATIZE) $(SPACY)
-	sed -i "s/_NEWLINE\t_NEWLINE/\n/g" ./data_analysis/train_result.csv
-	sed -i "s/_NEWLINE\t_NEWLINE/\n/g" ./data_analysis/test_result.csv
-else
-	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) $(LEMMATIZE) $(SPACY)
-endif
+	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) $(LEMMA) $(STEM)
+	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/train_result.csv
+	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/test_result.csv
 
 build_lexicon: build_dataset
-ifeq ("$(SPACY)","--spacy True")
+ifeq ("$(SPACY)","ON")
 	python3 ./data_analysis/entity_rec.py
 	mv ./data_analysis/train_result_spacy.csv ./data_analysis/train_result.csv
 	mv ./data_analysis/test_result_spacy.csv ./data_analysis/test_result.csv
