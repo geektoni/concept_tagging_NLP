@@ -18,13 +18,14 @@ export verbose=""
 
 # Usage and version information
 eval "$(docopts -V - -h - : "$@" <<EOF
-Usage: compute_lm [-nc <ngrams>] [-m <method>] [-p <prune_thresh>] [<train_data>] [<test_data>] [--example] [--verbose]
+Usage: build_lm.sh [<train_data>] [<test_data>] [--ngrams=<ngrams>] [--method=<method>] [--prune=<prune_thresh>] [--example] [--verbose]
 
 Options:
-	<train_data>    Train dataset used.
-	<test_data>     Test dataset used.
-	-nc <ngrams>    Size of n-grams.
-	-m <method>     Method used for discounting.
+  <train_data>  Train data.
+  <test_data>   Test data.
+	--ngrams=<ngrams>    Size of n-grams.
+	--method=<method>     Method used for discounting.
+	--prune=<prune_thresh>
 	--verbose
 	--help			Show help options.
 	--version		Print program version.
@@ -45,9 +46,9 @@ if [ -z $train_data ]; then train_data="pos_lm_data.txt"; fi
 if [ -z $test_data ]; then test_data="lexicon_pos.txt"; fi
 if [ -z $ngrams ]; then ngrams=4; fi
 if [ -z $method ]; then method="witten_bell"; fi
-if [ -z $prune_tresh ]; then prune_thresh=1; fi
+if [ -z $prune_tresh ]; then prune_thresh=5; fi
 
-if [ ! -z $verbose ]; then
+if $verbose; then
   echo  "[*] LM Generator ($ngrams, $method)"
 fi
 
@@ -69,7 +70,7 @@ fi
 
 # Run fst on the model
 farcompilestrings --symbols=lexicon_pos.txt --unknown_symbol="<unk>" -keep_symbols=1 $train_data > text.far
-if [ ! -z $verbose ]; then
+if $verbose; then
   echo "[*] The LM was generated"
 fi
 

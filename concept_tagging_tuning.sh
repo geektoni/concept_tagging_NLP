@@ -1,11 +1,10 @@
 #!/bin/bash
 
+REPLACE=("keep" "word" "lemma" "stem")
 SPACY=("OFF" "ON")
-LEMMATIZE=("OFF" "ON")
-STEMMER=("OFF" "ON")
 NGRAMS=( 4 )
 METHODS=( "witten_bell" "absolute" "katz" "kneser_ney" "presmoothed" "unsmoothed" )
-KFOLD=5
+KFOLD=3
 
 # Unofficial strict bash
 set -euo pipefail
@@ -24,31 +23,28 @@ do
     do
       for s in ${SPACY[@]}
       do
-        for l in ${LEMMATIZE[@]}
+        for r in ${REPLACE[@]}
         do
-          for st in ${STEMMER[@]}
+          for i in $(seq 1 $KFOLD);
           do
-            for i in $(seq 1 $KFOLD);
-            do
-              make NC=${ng} METHOD=${m} SPACY=${s} LEMMATIZE=${l} STEMMER=${st} TRAIN_DATASET=./data_analysis/kfold_train_$i.txt TEST_DATASET=./data_analysis/kfold_test_$i.txt evaluate
+            make NC=${ng} METHOD=${m} SPACY=${s} REPLACE=${r} TRAIN_DATASET=./data_analysis/kfold_train_$i.txt TEST_DATASET=./data_analysis/kfold_test_$i.txt evaluate
 
-              # Get the accuracy result from the file
-              eval=`cat evaluation_results/conlleval_${ng}-${m}-1-${l}-${s}-${st}.txt | head -2 | tail -1 | /usr/bin/tr ";" "\n" | tail -1 | /usr/bin/tr ": " "\n" | tail -1`
+            # Get the accuracy result from the file
+            eval=`cat evaluation_results/conlleval_${ng}-${m}-5-${r}-${s}.txt | head -2 | tail -1 | /usr/bin/tr ";" "\n" | tail -1 | /usr/bin/tr ": " "\n" | tail -1`
 
-              echo "$eval" >> ./evaluation_results/${ng}-${m}-1-${l}-${s}-${st}-kfold.txt
+            echo "$eval" >> ./evaluation_results/${ng}-${m}-5-${r}-${s}-kfold.txt
 
-              make clean
-            done
-             # Compute the final performance
-            awk '{s+=$1}END{print s/NR}' RS="\n" ./evaluation_results/${ng}-${m}-1-${l}-${s}-${st}-kfold.txt > ./evaluation_results/${ng}-${m}-1-${l}-${s}-${st}-evaluation.txt
+            make clean
           done
+          # Compute the final performance
+          awk '{s+=$1}END{print s/NR}' RS="\n" ./evaluation_results/${ng}-${m}-5-${r}-${s}-kfold.txt > ./evaluation_results/${ng}-${m}-5-${r}-${s}-evaluation.txt
         done
       done
     done
 done
 
 # Generate a lighter version of the results
-cat "ngram size,smoothing,lemmatize, stemming, use entity resolution, k-fold F1 score" complete_results.txt
+cat "ngram size,smoothing used, pruning, replace O, entity resolution, k-fold F1 score" complete_results.txt
 for f in `ls ./evaluation_results/*-evaluation.txt`
 do
   file_name=`basename ${f} -evaluation.txt | tr "-" ","`

@@ -39,6 +39,15 @@ def lemmatize_text(text):
     else:
         return text[0]
 
+def word_text(text):
+    if not text[0].startswith("_"):
+        if text[1] == "O":
+            return text[0]
+        else:
+            return text[1]
+    else:
+        return text[0]
+
 def stem_text(text):
     if not text[0].startswith("_"):
         if text[1] == "O":
@@ -54,8 +63,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate the dataset we need to use.')
     parser.add_argument("--train-file", help="Train dataset.", type=str)
     parser.add_argument("--test-file", help="Test dataset.", type=str)
-    parser.add_argument("--lemmatize", help="Lemmatize and replace O concept.", action="store_true")
-    parser.add_argument("--stemmer", help="Use a stemmer", action="store_true")
+    parser.add_argument("--replace", help="Replace O concepts (keep, lemma, word, stem)", default="keep")
     args = parser.parse_args()
 
     train = pd.read_csv(args.train_file, delimiter="\t", header=None, skip_blank_lines=False).fillna("_NEWLINE")
@@ -63,25 +71,25 @@ if __name__ == "__main__":
 
     print(args)
 
-    if args.lemmatize:
+    if args.replace != "keep":
 
         # Apply the first transformation to the dataset
-        if args.stemmer:
+        if args.replace == "stem":
             transform = stem_text
-        else:
+        elif args.replace == "lemma":
             transform = lemmatize_text
+        else:
+            transform = word_text
 
         train[2] = train.apply(transform, axis=1)
         test[2] = test.apply(transform, axis=1)
 
-        if args.stemmer:
+        if args.replace == "stem":
             train[0] = train[0].apply(lambda x: stemmer.stem(x) if not x.startswith("_") else x)
             test[0] = test[0].apply(lambda x: stemmer.stem(x) if not x.startswith("_") else x)
-        else:
+        elif args.replace == "lemma":
             train[0] = train[0].apply(lambda x: get_lemmatize_word(x) if not x.startswith("_") else x)
             test[0] = test[0].apply(lambda x: get_lemmatize_word(x) if not x.startswith("_") else x)
-
-
 
         train[[0, 2]].to_csv("./data_analysis/train_result.csv", sep="\t", header=False, index=False)
         test[[0, 2]].to_csv("./data_analysis/test_result.csv", sep="\t", header=False, index=False)

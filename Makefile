@@ -1,30 +1,23 @@
 NC=4
-VERBOSE="--verbose"
+VERBOSE=ON
 SPACY=OFF
-METHOD="witten_bell"
-PRUNE_TRESH=1
+METHOD=witten_bell
+PRUNE_TRESH=5
 OUTPUT_DIR="./evaluation_results"
 TRAIN_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt"
 TEST_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt"
-LEMMATIZE=OFF
-STEMMER=OFF
+REPLACE=keep
 
-ifeq ("$(LEMMATIZE)","ON")
-	LEMMA=--lemmatize
+ifeq ("$(VERBOSE)","ON")
+	VERB=--verbose
 else
-	LEMMA=
+	VERB=
 endif
 
-ifeq ("$(STEMMER)","ON")
-	STEM=--stemmer
-else
-	STEM=
-endif
-
-OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-$(LEMMATIZE)-$(SPACY)-$(STEMMER)
+OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-$(REPLACE)-$(SPACY)
 
 build_dataset:
-	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) $(LEMMA) $(STEM)
+	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) --replace $(REPLACE)
 	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/train_result.csv
 	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/test_result.csv
 
@@ -34,8 +27,8 @@ ifeq ("$(SPACY)","ON")
 	mv ./data_analysis/train_result_spacy.csv ./data_analysis/train_result.csv
 	mv ./data_analysis/test_result_spacy.csv ./data_analysis/test_result.csv
 endif
-	bash build_lexicon.sh data_analysis/train_result.csv $(VERBOSE)
-	bash build_lexicon.sh data_analysis/train_result.csv --pos $(VERBOSE)
+	bash build_lexicon.sh data_analysis/train_result.csv $(VERB)
+	bash build_lexicon.sh data_analysis/train_result.csv --pos $(VERB)
 
 build_fsa_string_representation: build_lexicon
 	python3 utils/text2fsatxt.py "star of thor"
@@ -50,7 +43,7 @@ build_tok_pos_prob: build_tok_pos_counts
 	python3 concept_tagger.py
 
 build_lm: build_lexicon build_tok_pos_prob
-	bash build_lm.sh -nc $(NC) -m $(METHOD) -p $(PRUNE_TRESH) $(VERBOSE)
+	bash build_lm.sh --ngrams $(NC) --method $(METHOD) --prune $(PRUNE_TRESH) $(VERB)
 
 check: build_test_string build_lm
 	bash utils/checkAccept.sh
