@@ -17,16 +17,18 @@ endif
 OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-$(REPLACE)-$(SPACY)
 
 build_dataset:
-	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) --replace $(REPLACE)
-	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/train_result.csv
-	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/test_result.csv
-
-build_lexicon: build_dataset
 ifeq ("$(SPACY)","ON")
 	python3 ./data_analysis/entity_rec.py
 	mv ./data_analysis/train_result_spacy.csv ./data_analysis/train_result.csv
 	mv ./data_analysis/test_result_spacy.csv ./data_analysis/test_result.csv
+	python3 data_analysis/generate_dataset.py --train-file ./data_analysis/train_result.csv --test-file ./data_analysis/test_result.csv --replace $(REPLACE)
+else
+	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) --replace $(REPLACE)
 endif
+	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/train_result.csv
+	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/test_result.csv
+
+build_lexicon: build_dataset
 	bash build_lexicon.sh data_analysis/train_result.csv $(VERB)
 	bash build_lexicon.sh data_analysis/train_result.csv --pos $(VERB)
 

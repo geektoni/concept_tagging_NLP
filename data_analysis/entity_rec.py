@@ -3,8 +3,8 @@ nlp = spacy.load("en_core_web_sm")
 
 if __name__ == "__main__":
 
-    for original_dataset in [("./data_analysis/train_result.csv", "train"),
-                             ("./data_analysis/test_result.csv", "test")]:
+    for original_dataset in [("NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt", "train"),
+                             ("NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt", "test")]:
         total_words = []
         total_concepts = []
         with open(original_dataset[0], "r") as f:
