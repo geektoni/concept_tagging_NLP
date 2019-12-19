@@ -46,17 +46,15 @@
 \maketitle
 
 \begin{abstract}
-This work focuses on the well-known task of concept tagging phrase elements.
-This present a relatively important challenge in the NLP field since it is
-the starting point for more complex application. Weighted Finite State Transducer
-and statistical method were used and an analysis of their performances is also provided.
+This work focuses on the well-known task of concept tagging sentences. This represents a relatively important challenge when doing Natural Language Processing applications since it is the starting point for more complex techniques. This report details the realization of an SLU module for concept tagging on the movie domain. It shows also the performance obtained and the results over various techniques.
 \end{abstract}
 
 \section{Introduction}
-One of the first step of some NLP task is to analyze a given phrase to understand its underlying concept. For instance, imagine we are using a vocal application to order something to eat (e.g., "I would like a tortel di patate delivered at Piazza Trento 1, please"). In order for a machine to understand correctly what we want, firstly it needs to convert our utterances to a word representation, secondly it needs to assign concept to each of the word it heard (e.g., "tortel di patate" equals to requested food and "Piazza Trento 1" equals to the delivery address).
-This basic operation is of utmost importance for all the application which can be built upon this. For instance, the quality of you food assistant is dependent on the quality of this concept tagger. Imagine what could happen if the machine were to swap the delivery address with the requested food!).  
-The scope of this project is to provide a simple concept-tagger by developing a WSTF (Weighted Finite State Transducer) applied to the movie domain.
-The report is detailed as follow: in the first section we define more formally the problem statement, then we proceed with an analysis of the given dataset and with the description of the models employed. Ultimately, we discuss the obtained results while underlying their stengths and limitations. 
+One of the first and most important of any NLP task is to analyze a given phrase to understand its underlying meaning. More specifically, we want to find the most likely interpretation which maps the phrase to given concepts. For instance, imagine we are using a vocal application to order something to eat (e.g., "I would like a tortel di patate delivered at Piazza Trento 1, please"). For a machine to understand correctly what we want, firstly it needs to convert our utterances to a word representation, secondly, it needs to assign a concept to each of the words it heard (e.g., "tortel di patate" equals to an hypothetical "FOOD" concept and "Piazza Trento 1" equals to the "DELIVERY ADDRESS").
+This basic operation is of utmost importance for all the application which can be built upon this. For instance, the quality of your food assistant is dependent on the quality of this concept tagger. Imagine what could happen if the machine were to swap the delivery address with the requested food!.  
+The scope of this project is to provide a simple concept-tagger by developing a WSTF (Weighted Finite-State Transducer) applied to the movie domain.
+The report is structured as follow: the first section defines more formally the problem statement, then we proceed with an analysis of the given dataset and with the description of the models employed. Ultimately, we discuss the obtained results while underlying their strengths and limitations.
+ 
 
 \section{Problem Statement}
 Given a sequence of tokens $<t_1, \ldots, t_n>$ and given a pool of concepts $<c_1, \ldots, c_m>$, we want to find the most likely assignment $<t_i, c_i>$ such that it maximizes the following probability:
@@ -64,7 +62,7 @@ Given a sequence of tokens $<t_1, \ldots, t_n>$ and given a pool of concepts $<c
 c_1, \ldots, c_n = \argmax_{c_1, \ldots, c_n} P (c_1, \ldots, c_n | t_1, \ldots, t_n)
 \label{frm:argmax}
 \end{equation}
-Thanks to the Markov assumption (the probability of the $i$-th concept depends only on the $(i-1)$-th concept and the probability of the $i$-th token depends only on the $i$-th concept), we can simplify the previous formula. Moreover, we can also compute its component by MLE (Maximum Likelihood Estimation):
+The previous formula can be made easier to compute thanks to the Markov assumption. The probability of the $i$-th concept $c_i$ depends only on the $(i-1)$-th concept $c_{i-1}$ and the probability of the $i$-th token $t_i$ depends only on the $i$-th concept $c_i$. We can estimate the various parameter by Maximum Likelihood (MLE):
 \begin{equation}
 c_1, \ldots, c_n = \argmax_{c_1, \ldots, c_n} P(t_i|c_i)P(c_i| c_{i-1})
 \label{frm:argmax-markov-assumption}
@@ -102,13 +100,11 @@ In the previous formula, $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$ and $P(c_i|c_
 
 \section{Data Analysis}
 
-The dataset used is called NL2SparQL4NLU. This work used only the "*.conll.txt" files (more specifically, one for training the language model and one for testing it). Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. An analysis of the content of the two files follows:
+The dataset used is called NL2SparQL4NLU [citation]. This work used only the "*.conll.txt" files. More specifically, one for training the language model and one for testing it. Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. An analysis of the content of the two files follows.
 
-The distribution of the tokens was analyzed. It was found to behave accordingly to the
-Zipf's Law, however, for brevity, it was not reported here since it was not showing 
-anything interesting. The OOV rate for the tokens is around $23.68\%$. 
-The distribution of the various concepts was also analyzed (both for the training
-and the test datasets). The distribution of the various concepts is shown in Figure \ref{fig:concept-distribution}. It is possible to see how the \textit{movie.name} concept is one of the most common (followed by \textit{actor.name} and \textit{person.name}). However, it can also be noted that the ''\textit{O}" concept represent the $70\%$ of the dataset, which represent an issue for the following tagging procedure.
+First of all, we analyzed the distribution of the tokens. and it was found to behave accordingly to the
+Zipf's Law. The OOV rate for the tokens between the train and the test datasets is around $23.68\%$. 
+Secondly, we analyzed the distribution of the various concepts. In such case, we performed a more in-depth analysis. Figure \ref{fig:concept-distribution} shows the distribution of the various concept. We noted that the ''\textit{O}" concept represent the $70\%$ of the dataset, which pose a big problem for the following tagging procedure. The concepts graph do not show the "O" concept distribution to make it easier to visualize the distribution of the other concepts. It is possible to see how the \textit{movie.name} concept is one of the most common (followed by \textit{actor.name} and \textit{person.name}). 
 
 Both train and test set contains concepts which are not present in the other dataset (and viceversa). The train dataset contains \textit{person.nationality} (2 occurrences) and \textit{movie.description} (2 occurrences) which are not present in the test set. The test dataset contains the concept \textit{movie.type} which is missing from the train dataset (4 occurrences). These again could cause mistagging issues and therefore lower the final performance.
 As a final note, there are also
@@ -180,12 +176,38 @@ Then, we need to find the path which minimize the cost within the final transduc
 \section{Experiments}
 
 Several experiments were run to assess the quality of 
-the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several smoothing techniques and ngram sizes. Each solution was evaluated by using k-fold cross-validation and the best result was then recorded. Firstly, we evaluated the Language Model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we computed a second improved baseline performance by using the solution provided by Gobbi et al. [add citation]. Ultimately, we evaluated the two SpaCy model variants (dataset with entity recognition and dataset with entity recognition plus "\textit{O}" tags replaced. The results are summarized in Table X.
+the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several smoothing techniques and ngram sizes. Each solution was evaluated by using k-fold cross-validation ($k=3$) and the best result was then recorded. Firstly, we evaluated the SLU model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we computed a second improved baseline performance by using the solution provided by Gobbi et al. [add citation]. Ultimately, we evaluated the two SpaCy model variants (dataset with entity recognition and dataset with entity recognition plus "\textit{O}" tags replaced. The results are summarized in Table X.
 
 The code employed for the project is publicy available on Github [add link]. The script were written using Python 3.6 and bash. OpenFST [add citation] and OpenNGRAM [add citation] libraries were used to build the WFST and the language model. SpaCy [add citation] library was used to perform entity recognition.
 The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
 
 \section{Results}
+\begin{table*}[]
+\centering
+\caption{Evaluation results }
+\label{tab:eval-results}
+\begin{tabular}{llllll}
+\hline
+\textbf{ngram size} & \textbf{smoothing used} & \textbf{pruning} & \textbf{replace O} & \textbf{entity resolution} & \textbf{k-fold F1 score} \\ \hline
+4 & kneser\_ney & 5 & keep & OFF & 75.04 \\
+4 & kneser\_ney & 5 & keep & ON & 70.6 \\
+4 & kneser\_ney & 5 & lemma & OFF & 83.45 \\
+4 & kneser\_ney & 5 & lemma & ON & 82.32 \\
+4 & kneser\_ney & 5 & stem & OFF & 83.61 \\
+4 & kneser\_ney & 5 & stem & ON & 82.64 \\
+4 & kneser\_ney & 5 & word & OFF & 83.73 \\
+4 & kneser\_ney & 5 & word & ON & 83.37 \\
+4 & witten\_bell & 5 & keep & OFF & 75.32 \\
+4 & witten\_bell & 5 & keep & ON & 70.39 \\
+4 & witten\_bell & 5 & lemma & OFF & 83.29 \\
+4 & witten\_bell & 5 & lemma & ON & 82.48 \\
+4 & witten\_bell & 5 & stem & OFF & 83.38 \\
+4 & witten\_bell & 5 & stem & ON & 82.98 \\
+4 & witten\_bell & 5 & word & OFF & 83.36 \\
+4 & witten\_bell & 5 & word & ON & 82.24
+\\ \hline
+\end{tabular}
+\end{table*}
 
 \section{Credits}
 
