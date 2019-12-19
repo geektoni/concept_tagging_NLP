@@ -45,9 +45,9 @@ done
 
 # Generate a lighter version of the results
 cat "ngram size,smoothing used, pruning, replace O, entity resolution, k-fold F1 score" complete_results.txt
-for f in `ls ./evaluation_results/*-evaluation.txt`
+for f in `ls ./evaluation_results/*-evaluation.txt | sort`
 do
-  file_name=`basename ${f} -evaluation.txt | tr "-" ","`
+  file_name=`basename ${f} -evaluation.txt | /usr/bin/tr "-" ","`
   value=`cat ${f}`
-  echo ${f}, ${value} >> complete_results.txt
+  echo ${file_name}, ${value} >> complete_results.txt
 done

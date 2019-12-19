@@ -37,7 +37,7 @@ def lemmatize_text(text):
         else:
             return text[1]
     else:
-        return text[0]
+        return text[0] if text[1] == "O" else text[1]
 
 def word_text(text):
     if not text[0].startswith("_"):
@@ -46,7 +46,7 @@ def word_text(text):
         else:
             return text[1]
     else:
-        return text[0]
+        return text[0] if text[1] == "O" else text[1]
 
 def stem_text(text):
     if not text[0].startswith("_"):
@@ -55,7 +55,7 @@ def stem_text(text):
         else:
             return text[1]
     else:
-        return text[0]
+        return text[0] if text[1] == "O" else text[1]
 
 
 if __name__ == "__main__":
