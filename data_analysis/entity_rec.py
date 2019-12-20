@@ -1,10 +1,17 @@
 import spacy
 nlp = spacy.load("en_core_web_sm")
 
+import argparse
+
 if __name__ == "__main__":
 
-    for original_dataset in [("NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt", "train"),
-                             ("NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt", "test")]:
+    parser = argparse.ArgumentParser(description='Run entity recognition on the given dataset')
+    parser.add_argument("--train-file", help="Train dataset.", type=str)
+    parser.add_argument("--test-file", help="Test dataset.", type=str)
+    args = parser.parse_args()
+
+    for original_dataset in [(args.train_file, "train"),
+                             (args.test_file, "test")]:
         total_words = []
         total_concepts = []
         with open(original_dataset[0], "r") as f:
@@ -47,13 +54,14 @@ if __name__ == "__main__":
                             break
 
                         # Remove duplicate occurrences
-                        i = 0
-                        while i < len(phrase) - 1:
-                            if phrase[i] == phrase[i + 1] and phrase[i].startswith("_"):
-                                del phrase[i]
-                                del concepts[i]
-                            else:
-                                i = i + 1
+                        #i = 0
+                        #while i < len(phrase) - 1:
+                        #    if phrase[i] == phrase[i + 1] and phrase[i].startswith("_"):
+                                #del phrase[i]
+                                #del concepts[i]
+                        #        pass
+                        #    else:
+                        #        i = i + 1
                     total_words.append(phrase)
                     total_concepts.append(concepts)
                 # We reached the end of the file

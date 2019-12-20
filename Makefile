@@ -18,7 +18,7 @@ OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-$(REPLACE)-$(SPACY)
 
 build_dataset:
 ifeq ("$(SPACY)","ON")
-	python3 ./data_analysis/entity_rec.py
+	python3 ./data_analysis/entity_rec.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET)
 	mv ./data_analysis/train_result_spacy.csv ./data_analysis/train_result.csv
 	mv ./data_analysis/test_result_spacy.csv ./data_analysis/test_result.csv
 	python3 data_analysis/generate_dataset.py --train-file ./data_analysis/train_result.csv --test-file ./data_analysis/test_result.csv --replace $(REPLACE)
