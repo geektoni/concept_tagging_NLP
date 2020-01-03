@@ -157,7 +157,20 @@ directly \textbf{the token}, the \textbf{token's stem} and the \textbf{token's l
 \end{figure*}
 
 \subsection{Spoken Language Understanding Pipeline}
-The entire SLU pipeline of both models is composed of two main components:
+
+The entire SLU pipeline of both models is composed of two main components: the Concept Tagger (WFST) and the Language Model (LM). Moreover, the Entity Recognition classifier can be optionally used before building the WFST and the LM. 
+
+\subsubsection{ER Classifier}
+
+The Entity-Recognition classifier was used to covert certain tokens (or group of tokens) into entities. After applying the ER classifier and after having removed the possible duplicates entities (e.g., \textit{ed harris} is resolved into \textit{PERSON PERSON} instead of just one entity \textit{PERSON}), we obtain a final phrase which will be used to build the SLU model.
+\begin{itemize}
+\item \textbf{Original Phrase:} \textit{what year was ed harris in in apollo thirteen}
+\item \textbf{ER Phrase:} \textit{DATE was PERSON in in apollo CARDINAL}
+\item \textbf{Final Concepts:} \textit{\_date O B-actor.name O O B-movie.name \_cardinal}
+\end{itemize}
+
+From this example we can already seen the limits of this approach (e.g. \textit{apollo thirteen} is not recognized as a definite entity). 
+
 \subsubsection{Concept Tagger (WFST)}
 It is a transducer which encodes the probability $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$. The probability (score) is the weigth given to the transition from the given token to the concept. In order to solve possible numerical stability issue, the negative log was applied to the probability. Therefore, the weigth assigned to the transitions is computed by using $-log(P(t_i|c_i))$. An additional token called $<$\textit{unk}$>$ was added to the transducer to account for unknown words (namely, tokens which are present in the test dataset, but not in the train dataset). Moreover, for each of the possible concepts $c_i$, a transition $<$\textit{unk}$>$:$c_i$ was added with a score of $\frac{1}{\#concepts}$ (this means that each unknown token has an equal probability of ``representing" each concepts). 
 \begin{figure}[b!]
@@ -177,17 +190,7 @@ The previous components needs to be composed together with the sentence we want 
 \end{equation}
 Then, we need to find the path which minimize the cost within the final transducer (since we are using $-log()$ to compute the weigths, minimizing the path cost is the equivalent of maximizing the probability of that tagging sequence). This final operation corresponds to computing the equation shown in Formula \ref{frm:argmax-markov-assumption}.
 
-\section{Experiments}
-
-Several experiments were run to assess the quality of 
-the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several \textbf{smoothing techniques}, \textbf{ngram sizes} and \textbf{pruning frequencies}. Each solution was evaluated by using k-fold cross-validation ($k=5$) and the best result was then recorded. Firstly, we evaluated the SLU model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we evaluated the ER SLU model. The results are summarized in Table \ref{tab:eval-resuts}.
-
-The code employed for the project is publicy available on Github\footnote{https://github.com/geektoni/concept\_tagging\_NLP}. The script were written using Python 3.6 and bash. OpenFST \cite{openfst} and OpenNGRAM \cite{opengrm} libraries were used to build the WFST and the language model. The spaCy\footnote{https://spacy.io/} and NLTK\footnote{https://www.nltk.org/} libraries were used to perform entity recognition.
-The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
-
-\section{Results}
-
-\begin{table*}[h!]
+\begin{table*}[th!]
 \centering
 \caption{Evaluation results}
 \label{tab:eval-resuts}
@@ -205,11 +208,24 @@ The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM.
 \end{tabular}
 \end{table*}
 
-Despite our efforts, it seems that the ER SLU model do not add any improvements to the previous solutions. As we can see from Table X, the ER models are not even able to even reach the baseline performances in all of the various experiments we did. The best results were obtained using XXX...
+\section{Experiments}
+
+Several experiments were run to assess the quality of 
+the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several \textbf{smoothing techniques}, \textbf{ngram sizes} and \textbf{pruning frequencies}. Each solution was evaluated by using k-fold cross-validation ($k=3$) and the best result was then recorded. Firstly, we evaluated the SLU model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we evaluated the ER SLU model. The results are summarized in Table \ref{tab:eval-resuts}.
+
+The code employed for the project is publicy available on Github\footnote{https://github.com/geektoni/concept\_tagging\_NLP}. The script were written using Python 3.6 and bash. OpenFST \cite{openfst} and OpenNGRAM \cite{opengrm} libraries were used to build the WFST and the language model. The spaCy\footnote{https://spacy.io/} and NLTK\footnote{https://www.nltk.org/} libraries were used to perform entity recognition.
+The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
+
+
+
+\section{Results}
+
+Despite our efforts, it seems that the ER SLU model do not add any significant improvements to the previous solutions.
 
 This performace decreases happens for many different reasons. First of all, the spaCy entity resolution tool is not very precise. It was trained on the OntoNotes dataset [add citation] which is a general source for annotated text. It is not specific for the movie domain. Therefore, the label used are quite general (e.g., PERSON instead of ACTOR or DIRECTOR). For example, this caused some wrong entity recognition tagging (e.g., apollo 13 is the title of a film, but just 13 was recognized as a CARDINAL entity, while both the tokens should have had recognized).
 Secondly, the original dataset has some issues regarding its concepts definition. Some of the them are very similar and they represent the same entity in the end. For instance, movie.location and move.country indicates states and it can be difficult to differentiate between them. Therefore, it happens that some tokens are tagged as movie.location instead of movie.country.  
 
+One possible solution would be to build a custom Entity Recognition model specifically trained on the NL2SparQL4NLU dataset such to categorize more efficiently the various tokens. Moreover, more complex model could be explored (e.g., deep neural networks like LSTM) as several works have already done.
 
 \bibliography{acl2019}
 \bibliographystyle{acl_natbib}
