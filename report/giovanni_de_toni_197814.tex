@@ -100,11 +100,10 @@ In the previous formula, $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$ and $P(c_i|c_
 
 \section{Data Analysis}
 
-The dataset used is called NL2SparQL4NLU\footnote{https://github.com/esrel/NL2SparQL4NLU} \citep{Chen2014DerivingLR, gobbi2018concept}. It contains several english sentences related to the movie domain. This work used only the ``*.conll.txt" files. More specifically, one for training the language model and one for testing it. Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. Table \ref{tab:test-dataset-description} provides a general description of the two files. The OOV rate for the tokens between the train and the test datasets is around $0.24\%$.
+The dataset used is called NL2SparQL4NLU\footnote{https://github.com/esrel/NL2SparQL4NLU} \citep{Chen2014DerivingLR, gobbi2018concept}. It contains several english sentences related to the movie domain. This work used only the ``*.conll.txt" files. More specifically, one for training the language model and one for testing it. Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. Table \ref{tab:test-dataset-description} provides a general description of the two files. The average length of the sentences is around 6.42 and 6.52 for the train and test dataset respectively. The OOV rate for the tokens between the train and the test datasets is around $0.24\%$.
 
 
-First of all, we analyzed the distribution of the tokens. and it was found to behave accordingly to the
-Zipf's Law. Secondly, we analyzed the distribution of the various concepts. Figure \ref{fig:concept-distribution} shows the distribution of the various concepts. There are 43 concepts tag in the dataset (with the IOB tags) and 23 without the prefix. We noted that the ``\textit{O}" concept represent the $70\%$ of the dataset, which pose a big problem for the next tagging procedure. The concepts graph do not show the "O" concept to make it easier to visualize the distribution of the other concepts. It is possible to see how the \textit{movie.name} concept is one of the most common, followed by \textit{actor.name} and \textit{director.name}.
+Figure \ref{fig:concept-distribution} shows the distribution of the various concepts. There are 43 concepts tag in the dataset (with the IOB tags) and 23 without the prefix. We noted that the ``\textit{O}" concept represent the $70\%$ of the dataset, which pose a big problem for the next tagging procedure. The concepts graph do not show the "O" concept to make it easier to visualize the distribution of the other concepts. It is possible to see how the \textit{movie.name} concept is one of the most common, followed by \textit{actor.name} and \textit{director.name}.
 
 Both train and test set contains concepts which are not present in the other dataset (and viceversa). The train dataset contains \textit{person.nationality} (2 occurrences) and \textit{movie.description} (2 occurrences) which are not present in the test set. The test dataset contains the concept \textit{movie.type} which is missing from the train dataset (4 occurrences). These again could cause mistagging issues and therefore lower the final performance of the SLU model. 
 As a final note, there are also
@@ -125,12 +124,11 @@ The first SLU model was trained by using directly
 the dataset provided (without modifications). It 
 implements Formula \ref{frm:argmax-markov-assumption}. 
 This first model was used as the baseline. The second 
-model uses an entity recognition (ER) tool which converts 
+model uses entity recognition (ER) tools which convert 
 certain token(s) to an entity definition prior training 
 the complete language model. See Figure \ref{fig:entity-recognition} for an example of entity recognition. These 
-entity definitions replace the previous tokens. This 
-improvement was performed to reduce the variability of 
-the tokens inside the dataset. 
+entity definitions replace the previous tokens. We choose two external libraries which provides two pre-trained ER classifier: NLTK \cite{nltk} and spaCy \cite{spacy2}. 
+We performed these improvements to mitigate some ambiguity and variability issues which are presents in the dataset. 
 More specifically, some tokens refer to the same entity 
 and the same concept while they may have different values 
 (e.g., \textit{nick fury} and \textit{robin} are both 
@@ -184,7 +182,7 @@ Then, we need to find the path which minimize the cost within the final transduc
 Several experiments were run to assess the quality of 
 the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several \textbf{smoothing techniques}, \textbf{ngram sizes} and \textbf{pruning frequencies}. Each solution was evaluated by using k-fold cross-validation ($k=5$) and the best result was then recorded. Firstly, we evaluated the SLU model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we evaluated the ER SLU model. The results are summarized in Table \ref{tab:eval-resuts}.
 
-The code employed for the project is publicy available on Github\footnote{https://github.com/geektoni/concept\_tagging\_NLP}. The script were written using Python 3.6 and bash. OpenFST \cite{openfst} and OpenNGRAM \cite{opengrm} libraries were used to build the WFST and the language model. The SpaCy \cite{spacy2} library was used to perform entity recognition.
+The code employed for the project is publicy available on Github\footnote{https://github.com/geektoni/concept\_tagging\_NLP}. The script were written using Python 3.6 and bash. OpenFST \cite{openfst} and OpenNGRAM \cite{opengrm} libraries were used to build the WFST and the language model. The spaCy\footnote{https://spacy.io/} and NLTK\footnote{https://www.nltk.org/} libraries were used to perform entity recognition.
 The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
 
 \section{Results}
