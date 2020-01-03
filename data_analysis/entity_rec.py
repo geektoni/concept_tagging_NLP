@@ -39,15 +39,14 @@ def er_tool(phrase, method="spacy"):
             if result_bin[i][1] == "NE":
                 phrase[i] = "_{}".format(result[i][1].lower())
 
-        # Remove duplicate occurrences
-        # i = 0
-        # while i < len(phrase) - 1:
-        #    if phrase[i] == phrase[i + 1] and phrase[i].startswith("_"):
-        # del phrase[i]
-        # del concepts[i]
-        #        pass
-        #    else:
-        #        i = i + 1
+    # Remove duplicate occurrences
+    i = 0
+    while i < len(phrase) - 1:
+        if phrase[i] == phrase[i + 1] and phrase[i].startswith("_"):
+            del phrase[i]
+            del concepts[i]
+        else:
+            i = i + 1
     return phrase
 
 if __name__ == "__main__":
@@ -62,6 +61,7 @@ if __name__ == "__main__":
                              (args.test_file, "test")]:
         total_words = []
         total_concepts = []
+        total_phrase_length = 0
         with open(original_dataset[0], "r") as f:
 
             is_phrase = True
@@ -86,14 +86,21 @@ if __name__ == "__main__":
 
                     phrase = er_tool(phrase, args.er)
 
+                    total_phrase_length += len(phrase)
+
                     total_words.append(phrase)
                     total_concepts.append(concepts)
                 # We reached the end of the file
                 if not line:
                     is_phrase = False
 
-        with open("./data_analysis/{}_result_spacy.csv".format(original_dataset[1]), "w+") as output:
-            for i in range(len(total_words)):
-                for w, c in zip(total_words[i], total_concepts[i]):
-                    output.write("{}\t{}\n".format(w, c))
-                output.write("\n")
+        print(original_dataset[1], float(total_phrase_length)/len(total_words))
+
+        try:
+            with open("./data_analysis/{}_result_spacy.csv".format(original_dataset[1]), "w+") as output:
+                for i in range(len(total_words)):
+                    for w, c in zip(total_words[i], total_concepts[i]):
+                        output.write("{}\t{}\n".format(w, c))
+                    output.write("\n")
+        except:
+            pass
