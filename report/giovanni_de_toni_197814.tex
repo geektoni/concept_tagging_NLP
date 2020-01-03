@@ -93,22 +93,22 @@ In the previous formula, $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$ and $P(c_i|c_
 \textit{\# of unique concepts (without the prefix)}  & 23   \\ \hline
 \end{tabular}
 \caption{Test dataset.}
-\label{tab:test-dataset-description}
 \end{subtable}
 \caption{Description of the content of the dataset used.}
+\label{tab:test-dataset-description}
 \end{table*} 
 
 \section{Data Analysis}
 
-The dataset used is called NL2SparQL4NLU [citation]. This work used only the "*.conll.txt" files. More specifically, one for training the language model and one for testing it. Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. An analysis of the content of the two files follows.
+The dataset used is called NL2SparQL4NLU\footnote{https://github.com/esrel/NL2SparQL4NLU} \citep{Chen2014DerivingLR, gobbi2018concept}. It contains several english sentences related to the movie domain. This work used only the ``*.conll.txt" files. More specifically, one for training the language model and one for testing it. Each file is written using the token-per-line CONLL format with tokens and NLU concept tags. Table \ref{tab:test-dataset-description} provides a general description of the two files. The OOV rate for the tokens between the train and the test datasets is around $0.24\%$.
+
 
 First of all, we analyzed the distribution of the tokens. and it was found to behave accordingly to the
-Zipf's Law. The OOV rate for the tokens between the train and the test datasets is around $23.68\%$. 
-Secondly, we analyzed the distribution of the various concepts. In such case, we performed a more in-depth analysis. Figure \ref{fig:concept-distribution} shows the distribution of the various concept. We noted that the ''\textit{O}" concept represent the $70\%$ of the dataset, which pose a big problem for the following tagging procedure. The concepts graph do not show the "O" concept distribution to make it easier to visualize the distribution of the other concepts. It is possible to see how the \textit{movie.name} concept is one of the most common (followed by \textit{actor.name} and \textit{person.name}). 
+Zipf's Law. Secondly, we analyzed the distribution of the various concepts. Figure \ref{fig:concept-distribution} shows the distribution of the various concepts. There are 43 concepts tag in the dataset (with the IOB tags) and 23 without the prefix. We noted that the ``\textit{O}" concept represent the $70\%$ of the dataset, which pose a big problem for the next tagging procedure. The concepts graph do not show the "O" concept to make it easier to visualize the distribution of the other concepts. It is possible to see how the \textit{movie.name} concept is one of the most common, followed by \textit{actor.name} and \textit{director.name}.
 
-Both train and test set contains concepts which are not present in the other dataset (and viceversa). The train dataset contains \textit{person.nationality} (2 occurrences) and \textit{movie.description} (2 occurrences) which are not present in the test set. The test dataset contains the concept \textit{movie.type} which is missing from the train dataset (4 occurrences). These again could cause mistagging issues and therefore lower the final performance.
+Both train and test set contains concepts which are not present in the other dataset (and viceversa). The train dataset contains \textit{person.nationality} (2 occurrences) and \textit{movie.description} (2 occurrences) which are not present in the test set. The test dataset contains the concept \textit{movie.type} which is missing from the train dataset (4 occurrences). These again could cause mistagging issues and therefore lower the final performance of the SLU model. 
 As a final note, there are also
-some tokens which are the results of mispelling (e.g., "dispaly", "Scorcese") which therefore could lead to mistagging.
+some tokens which are the results of mispelling (e.g., ``dispaly", ``Scorcese") which therefore could lead to other tagging errors.
 
 
 \section{Models}
@@ -116,27 +116,33 @@ some tokens which are the results of mispelling (e.g., "dispaly", "Scorcese") wh
 \begin{figure}[b!]
 \centering
 	\includegraphics[width=1\linewidth]{img/entity}
-	\caption{Example of entity recognition. For instance, the "\textit{ed harris}" tokens were recognized as a PERSON while "\textit{thirteen}" was recognized as number.}
+	\caption{Example of entity recognition. For instance, the ``\textit{ed harris}" tokens were recognized as a PERSON while ``\textit{thirteen}" was recognized as number. Therefore, the ``\textit{ed harris}" tokens will be replaced by the entity ``PERSON"}
 	\label{fig:entity-recognition}
 \end{figure}
 
-In this work we devised four separated language models. 
-The first language model was developed by using directly 
-the dataset provided (without any other addition). It 
-implements directly Formula \ref{frm:argmax-markov-
-assumption}. The second model implements a solution 
-provided by Gobbi et al. [add citation]. As the data 
-analysis showed us, the majority of the dataset concepts 
-are "\textit{O}" which are not informative enough. Gobbi 
-et al. proposes to substitute each occurrences of the 
-"\textit{O}" concept with the corresponding lemmatized 
-token such to increase the final performances. 
-The third and fourth models add to their pipelines an 
-entity recognition tool which converts certain token(s) 
-to an entity definition. This entity definition replace 
-the previous token. This improvement was performed such to reduce the variability inside the dataset. 
-Some tokens infact refer to the same entity, while they may have different values (e.g., \textit{nick fury} and \textit{robin} are both character names, even if they have different tokens). See Figure \ref{fig:entity-recognition} for an example of entity recognition.
-
+In this work we devised and evaluated two separated SLU models. 
+The first SLU model was trained by using directly 
+the dataset provided (without modifications). It 
+implements Formula \ref{frm:argmax-markov-assumption}. 
+This first model was used as the baseline. The second 
+model uses an entity recognition (ER) tool which converts 
+certain token(s) to an entity definition prior training 
+the complete language model. See Figure \ref{fig:entity-recognition} for an example of entity recognition. These 
+entity definitions replace the previous tokens. This 
+improvement was performed to reduce the variability of 
+the tokens inside the dataset. 
+More specifically, some tokens refer to the same entity 
+and the same concept while they may have different values 
+(e.g., \textit{nick fury} and \textit{robin} are both 
+persons (entity) and character names (concept), even if 
+they have different tokens). 
+As the analysis showed us, the majority of the dataset 
+concepts  are equal to ``\textit{O}" which is not 
+informative enough. A possible solution is to substitute 
+each occurrences of the  ``\textit{O}" concept with 
+another value, such to increase the final performances.
+We tried three possibile substitution policies. We used: 
+directly \textbf{the token}, the \textbf{token's stem} and the \textbf{token's lemma}. 
 
 
 \begin{figure*}
@@ -148,14 +154,14 @@ Some tokens infact refer to the same entity, while they may have different value
 	\includegraphics[width=\textwidth]{img/test-concepts-distribution}
 	\caption{Test dataset.}
 	\end{subfigure}
-	\label{fig:concept-distribution}
 	\caption{Distributions of the various concepts in the train and test datasets. The \textit{O} concept was removed to make it easier to understand the weight of the other concepts.}
+	\label{fig:concept-distribution}
 \end{figure*}
 
 \subsection{Spoken Language Understanding Pipeline}
-The entire pipeline is composed of two main components.
+The entire SLU pipeline of both models is composed of two main components:
 \subsubsection{Concept Tagger (WFST)}
-It is a transducer which encodes the probability $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$. The probability (score) is the weigth given to the transition from the given token to the concept. In order to solve possible numerical stability issue, the negative log was applied to the probability. Therefore, the weigth assigned to the transitions is computed by using $-log(P(t_i|c_i))$. An additional token called $<$\textit{unk}$>$ was added to the transducer to account for unknown words (namely, tokens which are present in the test dataset, but not in the train dataset). Moreover, for each of the possible concepts $c_i$, a transition $c_i$:$<$\textit{unk}$>$ was added with a score of $\frac{1}{\#concepts}$ (this means that each unknown token has an equal probability of "represeting" each concepts). 
+It is a transducer which encodes the probability $P(t_i|c_i) = \frac{C(c_i, t_i)}{C(c_i)}$. The probability (score) is the weigth given to the transition from the given token to the concept. In order to solve possible numerical stability issue, the negative log was applied to the probability. Therefore, the weigth assigned to the transitions is computed by using $-log(P(t_i|c_i))$. An additional token called $<$\textit{unk}$>$ was added to the transducer to account for unknown words (namely, tokens which are present in the test dataset, but not in the train dataset). Moreover, for each of the possible concepts $c_i$, a transition $<$\textit{unk}$>$:$c_i$ was added with a score of $\frac{1}{\#concepts}$ (this means that each unknown token has an equal probability of ``representing" each concepts). 
 \begin{figure}[b!]
 	\centering
 	\includegraphics[width=0.5\linewidth]{img/pos-tagger}
@@ -167,48 +173,47 @@ It is a transducer which encodes the probability $P(c_i|c_{i-1}) = \frac{C(c_{i-
 
 \subsection{Final SLU Model}
 
-The previous components needs to be composed together to be used. The sentence we want to tag needs to be transformed into a FST and then it will be composed with the previouse outlined components:
+The previous components needs to be composed together with the sentence we want to tag to be used.
 \begin{equation}
 \lambda_{CT} = \lambda_{sentence} \circ \lambda_{WFST} \circ \lambda_{LM}
 \end{equation}
-Then, we need to find the path which minimize the cost within the final transducer (since we are using $-log()$ to compute the weigths, minimizing the path cost is the equivalent of maximizing the probability of that tagging sequence). This final operation corresponds to computing the equation \ref{frm:argmax-markov-assumption}.
+Then, we need to find the path which minimize the cost within the final transducer (since we are using $-log()$ to compute the weigths, minimizing the path cost is the equivalent of maximizing the probability of that tagging sequence). This final operation corresponds to computing the equation shown in Formula \ref{frm:argmax-markov-assumption}.
 
 \section{Experiments}
 
 Several experiments were run to assess the quality of 
-the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several smoothing techniques and ngram sizes. Each solution was evaluated by using k-fold cross-validation ($k=3$) and the best result was then recorded. Firstly, we evaluated the SLU model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we computed a second improved baseline performance by using the solution provided by Gobbi et al. [add citation]. Ultimately, we evaluated the two SpaCy model variants (dataset with entity recognition and dataset with entity recognition plus "\textit{O}" tags replaced. The results are summarized in Table X.
+the concept taggers. As a metric, we tried to find the solution which maximize the \textit{F1-score} over the test set. For each provided solution, we perfomed an extensive hyperparameter search by trying several \textbf{smoothing techniques}, \textbf{ngram sizes} and \textbf{pruning frequencies}. Each solution was evaluated by using k-fold cross-validation ($k=5$) and the best result was then recorded. Firstly, we evaluated the SLU model based directly on the given dataset without any further improvements. The best combination was then used as a baseline. Secondly, we evaluated the ER SLU model. The results are summarized in Table \ref{tab:eval-resuts}.
 
-The code employed for the project is publicy available on Github [add link]. The script were written using Python 3.6 and bash. OpenFST [add citation] and OpenNGRAM [add citation] libraries were used to build the WFST and the language model. SpaCy [add citation] library was used to perform entity recognition.
+The code employed for the project is publicy available on Github\footnote{https://github.com/geektoni/concept\_tagging\_NLP}. The script were written using Python 3.6 and bash. OpenFST \cite{openfst} and OpenNGRAM \cite{opengrm} libraries were used to build the WFST and the language model. The SpaCy \cite{spacy2} library was used to perform entity recognition.
 The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM. 
 
 \section{Results}
-\begin{table*}[]
+
+\begin{table*}[h!]
 \centering
-\caption{Evaluation results }
-\label{tab:eval-results}
+\caption{Evaluation results}
+\label{tab:eval-resuts}
 \begin{tabular}{llllll}
 \hline
-\textbf{ngram size} & \textbf{smoothing used} & \textbf{pruning} & \textbf{replace O} & \textbf{entity resolution} & \textbf{k-fold F1 score} \\ \hline
-4 & kneser\_ney & 5 & keep & OFF & 75.04 \\
-4 & kneser\_ney & 5 & keep & ON & 70.6 \\
-4 & kneser\_ney & 5 & lemma & OFF & 83.45 \\
-4 & kneser\_ney & 5 & lemma & ON & 82.32 \\
-4 & kneser\_ney & 5 & stem & OFF & 83.61 \\
-4 & kneser\_ney & 5 & stem & ON & 82.64 \\
-4 & kneser\_ney & 5 & word & OFF & 83.73 \\
-4 & kneser\_ney & 5 & word & ON & 83.37 \\
-4 & witten\_bell & 5 & keep & OFF & 75.32 \\
-4 & witten\_bell & 5 & keep & ON & 70.39 \\
-4 & witten\_bell & 5 & lemma & OFF & 83.29 \\
-4 & witten\_bell & 5 & lemma & ON & 82.48 \\
-4 & witten\_bell & 5 & stem & OFF & 83.38 \\
-4 & witten\_bell & 5 & stem & ON & 82.98 \\
-4 & witten\_bell & 5 & word & OFF & 83.36 \\
-4 & witten\_bell & 5 & word & ON & 82.24
-\\ \hline
+\textbf{ngram size} & \textbf{smoothing used} & \textbf{pruning} & \textbf{replace O} & \textbf{k-fold F1 score} & \textbf{k-fold F1 score (ER)} \\ \hline
+4 & kneser\_ney & 5 & keep & 75.04 & 74.41 \\
+4 & kneser\_ney & 5 & lemma & 83.45 & 83.27 \\
+4 & kneser\_ney & 5 & stem & 83.61 & 83.47 \\
+4 & kneser\_ney & 5 & word & 83.73 & 83.49 \\
+4 & witten\_bell & 5 & keep & 75.32 & 74.53 \\
+4 & witten\_bell & 5 & lemma & 83.29 & 83.43 \\
+4 & witten\_bell & 5 & stem & 83.38 & 83.55 \\
+4 & witten\_bell & 5 & word & 83.36 & 83.40 \\ \hline
 \end{tabular}
 \end{table*}
 
-\section{Credits}
+Despite our efforts, it seems that the ER SLU model do not add any improvements to the previous solutions. As we can see from Table X, the ER models are not even able to even reach the baseline performances in all of the various experiments we did. The best results were obtained using XXX...
+
+This performace decreases happens for many different reasons. First of all, the spaCy entity resolution tool is not very precise. It was trained on the OntoNotes dataset [add citation] which is a general source for annotated text. It is not specific for the movie domain. Therefore, the label used are quite general (e.g., PERSON instead of ACTOR or DIRECTOR). For example, this caused some wrong entity recognition tagging (e.g., apollo 13 is the title of a film, but just 13 was recognized as a CARDINAL entity, while both the tokens should have had recognized).
+Secondly, the original dataset has some issues regarding its concepts definition. Some of the them are very similar and they represent the same entity in the end. For instance, movie.location and move.country indicates states and it can be difficult to differentiate between them. Therefore, it happens that some tokens are tagged as movie.location instead of movie.country.  
+
+
+\bibliography{acl2019}
+\bibliographystyle{acl_natbib}
 
 \end{document}
