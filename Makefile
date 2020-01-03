@@ -58,7 +58,8 @@ evaluate: clean build_lm
 
 clean: ## Clean the directory from the temporary files
 	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa data_analysis/*.csv
-	rm -f *.tex *.prob *.counts *.txt *.far *.fsa *.fst *.lm *.jpg evaluation_files/*.fst_evaluation *.csv !(requirements.txt)
+	rm -f *.tex *.prob *.counts *.far *.fsa *.fst *.lm *.jpg evaluation_files/*.fst_evaluation *.csv
+	rm -r `touch tmpfiletxt.txt && ls *.txt | grep -v "requirements.txt"`
 
 # https://gist.github.com/prwhite/8168133
 help:           ## Show this help.
