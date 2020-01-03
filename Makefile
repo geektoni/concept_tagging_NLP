@@ -1,6 +1,6 @@
 NC=4
 VERBOSE=ON
-SPACY=OFF
+ER=none
 METHOD=witten_bell
 PRUNE_TRESH=5
 OUTPUT_DIR="./evaluation_results"
@@ -14,17 +14,14 @@ else
 	VERB=
 endif
 
-OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-$(REPLACE)-$(SPACY)
+OUTPUT_NAME=$(NC)-$(METHOD)-$(PRUNE_TRESH)-$(REPLACE)-$(ER)
 
 build_dataset:
-ifeq ("$(SPACY)","ON")
-	python3 ./data_analysis/entity_rec.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET)
+	python3 ./data_analysis/entity_rec.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) --er $(ER)
 	mv ./data_analysis/train_result_spacy.csv ./data_analysis/train_result.csv
 	mv ./data_analysis/test_result_spacy.csv ./data_analysis/test_result.csv
 	python3 data_analysis/generate_dataset.py --train-file ./data_analysis/train_result.csv --test-file ./data_analysis/test_result.csv --replace $(REPLACE)
-else
-	python3 data_analysis/generate_dataset.py --train-file $(TRAIN_DATASET) --test-file $(TEST_DATASET) --replace $(REPLACE)
-endif
+
 	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/train_result.csv
 	sed -i "s/_NEWLINE\t_NEWLINE//g" ./data_analysis/test_result.csv
 
