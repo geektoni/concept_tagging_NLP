@@ -3,12 +3,25 @@ import seaborn as sns
 import pandas as pd
 sns.set()
 
-train = pd.read_csv("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt", delimiter="\t", header=None)[1]
-test = pd.read_csv("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt", delimiter="\t", header=None)[1]
+train = pd.read_csv("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt", delimiter="\t", header=None)
+test = pd.read_csv("../NL2SparQL4NLU/dataset/NL2SparQL4NLU.test.conll.txt", delimiter="\t", header=None)
 
 # Get only the tag from the various elements (not IOB)
-train = train.str.split("-", expand=True).fillna("O")[1]
-test = test.str.split("-", expand=True).fillna("O")[1]
+train_tok = train.copy()[0]
+test_tok = test.copy()[0]
+
+print(train.describe())
+print("")
+print(test.describe())
+print("")
+print(len(set(train[1].unique()).union(set(test[1].unique()))))
+print("")
+
+train = train[1].str.split("-", expand=True).fillna("O")[1]
+test = test[1].str.split("-", expand=True).fillna("O")[1]
+
+print("Unique tokens:", len(set(train.unique()).union(set(test.unique()))))
+print("")
 
 # Describe the datasets
 print(train.describe())
@@ -29,6 +42,18 @@ missing_elements_test = list(set(train.unique())-set(test.unique()))
 print(missing_elements_test)
 for i in missing_elements_test:
     print(i, train[ train == i ].count(), train[ train == i ].count()/len(train))
+
+print("train unique tokens: ", len(train_tok.unique()))
+print("test unique tokens: ", len(test_tok.unique()))
+print("tokens missing from the train set: ", len(list(set(test_tok.unique())-set(train_tok.unique()))))
+print("tokens missing from the test set: ",  len(list(set(train_tok.unique())-set(test_tok.unique()))))
+print("")
+print("train concepts unique: ", len(train.unique()))
+print("test concepts unique: ", len(test.unique()))
+print("concept missing from the train set: ", len(missing_elements_train), missing_elements_train)
+print("concept missing from the test set: ", len(missing_elements_test), missing_elements_test)
+
+print("OOV RATE: ", float(len(list(set(test_tok.unique())-set(train_tok.unique()))))/float(len(train_tok.unique())))
 
 index=1
 for data in [train, test]:
