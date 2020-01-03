@@ -192,7 +192,7 @@ Then, we need to find the path which minimize the cost within the final transduc
 
 \begin{table*}[th!]
 \centering
-\caption{Evaluation results}
+\caption{K-fold cross-validation results ($K=3$). The bold values indicate the best combination found with respect to the baseline which is shown on the first line from the top.}
 \label{tab:eval-resuts}
 \begin{tabular}{llllll}
 \hline
@@ -220,9 +220,10 @@ The experiments were run on a 8th-core Intel i7 CPU with 16GB of RAM.
 
 \section{Results}
 
-Despite our efforts, it seems that the ER SLU model do not add any significant improvements to the previous solutions.
+We performed an intensive hyperparameter search and we discover that the best results were obtained using the: \textbf{Kneser-Ney} smoothing method, an \textbf{ngram size of 4} and a \textbf{pruning threshold of 5}. Moreover, we discover that by replacing the ``O" concepts with either the \textbf{stem} of the token or the token itself we were able to increase the performances of 8\%.
+However, we did not notice any significative improvements by using the entity-resolution classifiers. We also discover that the spaCy's ER classifier performs much better than the provided NLTK ER classifier.Table X shows the complete results for the best combinations.
 
-This performace decreases happens for many different reasons. First of all, the spaCy entity resolution tool is not very precise. It was trained on the OntoNotes dataset [add citation] which is a general source for annotated text. It is not specific for the movie domain. Therefore, the label used are quite general (e.g., PERSON instead of ACTOR or DIRECTOR). For example, this caused some wrong entity recognition tagging (e.g., apollo 13 is the title of a film, but just 13 was recognized as a CARDINAL entity, while both the tokens should have had recognized).
+We think that the ER classifier does not improve the performances for several reasons. First of all, the spaCy entity resolution tool is not very precise. It was trained on the OntoNotes dataset [add citation] which is a general source for annotated text. It is not specific for the movie domain. Therefore, the label used are quite general (e.g., PERSON instead of ACTOR or DIRECTOR). For example, this caused some wrong entity recognition tagging (e.g., apollo 13 is the title of a film, but just 13 was recognized as a CARDINAL entity, while both the tokens should have had recognized).
 Secondly, the original dataset has some issues regarding its concepts definition. Some of the them are very similar and they represent the same entity in the end. For instance, movie.location and move.country indicates states and it can be difficult to differentiate between them. Therefore, it happens that some tokens are tagged as movie.location instead of movie.country.  
 
 One possible solution would be to build a custom Entity Recognition model specifically trained on the NL2SparQL4NLU dataset such to categorize more efficiently the various tokens. Moreover, more complex model could be explored (e.g., deep neural networks like LSTM) as several works have already done.
