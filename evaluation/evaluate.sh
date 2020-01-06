@@ -28,7 +28,7 @@ if [ -z $lexicon ]; then lexicon="lexicon.txt"; fi
 if [ -z $evaluation_dir ]; then evaluation_dir="evaluation_files"; fi
 
 # Generate the various fsa
-if [ -z "$(ls -A $evaluation_dir)" ]; then
+if [ -z "$(ls $evaluation_dir)" ]; then
   bash ./utils/text2fsa.sh evaluation_text.txt --far
 else
   echo "[*] The evaluation dir (${evaluation_dir}) is not empty. Reusing files."
