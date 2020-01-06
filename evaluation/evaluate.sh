@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# -----------------------------------------------------------
+# For each of the evalution files (*.fst), run the SLU model
+# and generate its evaluation against the ground truth.
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
 
 test_fsa=''
 pos_tagger_fsa=''

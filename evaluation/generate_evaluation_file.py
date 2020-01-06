@@ -1,3 +1,11 @@
+# -----------------------------------------------------------
+# Generate the complete files with the predicted concepts and
+# the ground truth concepts.
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
 import pandas as pd
 
 import argparse

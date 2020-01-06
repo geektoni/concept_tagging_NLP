@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# -----------------------------------------------------------
+# Generate evaluation data from the test set.
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
 
 export test_data=""
 
