@@ -22,8 +22,8 @@ In order to install and create the environment, please follow these steps:
 git clone https://github.com/geektoni/concept_tagging_NLP
 cd concept_tagging_NLP
 conda create --name ctnlp --file requirements.txt
-python -m spacy download en_core_web_sm
 conda activate ctnlp
+python -m spacy download en_core_web_sm
 ```
 
 ## Usage
