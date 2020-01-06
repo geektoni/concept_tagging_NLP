@@ -1,3 +1,11 @@
+# -----------------------------------------------------------
+# Parse the NL2SparQL4NLU dataset and replace the O concept
+# tag by using the specified method (lemma, stem or token).
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
 import pandas as pd
 
 import argparse
@@ -12,6 +20,11 @@ lemmatizer = WordNetLemmatizer()
 stemmer = PorterStemmer()
 
 def get_wordnet_pos(treebank_tag):
+    """
+    Convert the POS tag into an wordnet pos tag.
+    :param treebank_tag: treebank_tag
+    :return: the converted tag
+    """
 
     if treebank_tag.startswith('J'):
         return wordnet.ADJ
@@ -25,12 +38,22 @@ def get_wordnet_pos(treebank_tag):
         return ""
 
 def get_lemmatize_word(word):
+    """
+    Lemmatize the given word
+    :param word: string
+    :return: lemmatized word
+    """
     token = word_tokenize(word)
     pos_wn = nltk.pos_tag(token)[0][1]
     pos = "n" if get_wordnet_pos(pos_wn) == "" else get_wordnet_pos(pos_wn)
     return lemmatizer.lemmatize(word, pos=pos)
 
 def lemmatize_text(text):
+    """
+    Replace O with the lemma of the token
+    :param text: token
+    :return: replaced O
+    """
     if not text[0].startswith("_"):
         if text[1] == "O":
             return get_lemmatize_word(text[0])
@@ -40,6 +63,11 @@ def lemmatize_text(text):
         return text[0] if text[1] == "O" else text[1]
 
 def word_text(text):
+    """
+        Replace O with the token
+        :param text: token
+        :return: replaced O
+        """
     if not text[0].startswith("_"):
         if text[1] == "O":
             return text[0]
@@ -49,6 +77,11 @@ def word_text(text):
         return text[0] if text[1] == "O" else text[1]
 
 def stem_text(text):
+    """
+        Replace O with the stem of the token
+        :param text: token
+        :return: replaced O
+        """
     if not text[0].startswith("_"):
         if text[1] == "O":
             return stemmer.stem(text[0])

@@ -1,9 +1,21 @@
-import pandas as pd
+# -----------------------------------------------------------
+# Parse the NL2SparQL4NLU dataset and generate the sub-files
+# needed for the k-fold cross-validation.
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
+
 import random
 import argparse
-from tqdm import tqdm
 
 def parse_file(filename):
+    """
+    Parse a given filename and generate a list of sentences.
+    :param filename: given filename path
+    :return: a list of sentences
+    """
     with open(filename, "r") as f:
 
         is_phrase = True
@@ -32,6 +44,12 @@ def parse_file(filename):
     return total_phrase
 
 def write(data, filename):
+    """
+    Write data into a given file
+    :param data: data we want to write
+    :param filename: path to the output file
+    :return: None
+    """
     with open(filename, "w+") as output:
         for e in data:
             for w in zip(e[0], e[1]):

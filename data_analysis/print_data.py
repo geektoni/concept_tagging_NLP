@@ -1,3 +1,12 @@
+# -----------------------------------------------------------
+# Parse the NL2SparQL4NLU dataset and print some statistics
+# about the data.
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd

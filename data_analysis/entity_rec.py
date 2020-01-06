@@ -1,3 +1,12 @@
+# -----------------------------------------------------------
+# Parse the NL2SparQL4NLU dataset and run entity recognition
+# tools to replace certain tokens with an entity defintion.
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
+
 import nltk
 
 import spacy
@@ -6,9 +15,21 @@ nlp = spacy.load("en_core_web_sm")
 import argparse
 
 def ie_preprocess(phrase):
+    """
+    Tokenize and POS-tag the given phrase
+    :param phrase: a string
+    :return: the pos-tagged version of the phrase.
+    """
     return nltk.pos_tag(nltk.word_tokenize(phrase))
 
 def er_tool(phrase, method="spacy"):
+    """
+    Replace entities detected into the given phrase with
+    an entity definition
+    :param phrase: a string
+    :param method: the ER method (spacy/nltk/none)
+    :return: the updated sentence
+    """
 
     if method=="none":
         return phrase
@@ -57,6 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("--er", help="Type of ER we want to use (spacy or nltk)", type=str, default="spacy")
     args = parser.parse_args()
 
+    # Loop over the test and train dataset
     for original_dataset in [(args.train_file, "train"),
                              (args.test_file, "test")]:
         total_words = []
