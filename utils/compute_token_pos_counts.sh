@@ -65,6 +65,13 @@ sed 's/^ *$/#/g' |\
 /usr/bin/tr '#' '\n' |\
 sed 's/^ *//g;s/ *$//g' > pos_lm_data.txt
 
+## Generate pos_lm_data_test
+cat $test_data | cut -f 2 |\
+sed 's/^ *$/#/g' |\
+/usr/bin/tr '\n' ' ' |\
+/usr/bin/tr '#' '\n' |\
+sed 's/^ *//g;s/ *$//g' > pos_lm_data_test.txt
+
 # Remove files
 rm POS.tmp TOK_POS.tmp
 

@@ -1,7 +1,7 @@
 NC=4
 VERBOSE=ON
 ER=none
-METHOD=witten_bell
+METHOD=kneser_ney
 PRUNE_TRESH=5
 OUTPUT_DIR="./evaluation_results"
 TRAIN_DATASET="./NL2SparQL4NLU/dataset/NL2SparQL4NLU.train.conll.txt"
@@ -59,7 +59,7 @@ evaluate: clean build_lm
 clean: ## Clean the directory from the temporary files
 	rm -f lexicon.txt lexicon_base.txt lexicon_count.txt utils/converted_string.far utils/extracted.fsa utils/intersected.fsa data_analysis/*.csv
 	rm -f *.tex *.prob *.counts *.far *.fsa *.fst *.lm *.jpg evaluation_files/*.fst_evaluation *.csv
-	rm -r `touch tmpfiletxt.txt && ls *.txt | grep -v "requirements.txt|\complete_results.txt"`
+	rm -r `touch tmpfiletxt.txt && ls *.txt | grep -v "requirements.txt\|complete_results.txt"`
 
 # https://gist.github.com/prwhite/8168133
 help:           ## Show this help.

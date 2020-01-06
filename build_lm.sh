@@ -43,7 +43,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 if [ -z $train_data ]; then train_data="pos_lm_data.txt"; fi
-if [ -z $test_data ]; then test_data="lexicon_pos.txt"; fi
+if [ -z $test_data ]; then test_data="pos_lm_data_test.txt"; fi
 if [ -z $ngrams ]; then ngrams=4; fi
 if [ -z $method ]; then method="witten_bell"; fi
 if [ -z $prune_tresh ]; then prune_thresh=5; fi
@@ -90,10 +90,10 @@ ngrammake --method="$method" text_reduced.counts > pos.lm
 #echo "[*] The string is: $generated_string"
 
 # Compute the perplexity on the test data
-#echo "[*] Computing perplexity on the given test dataset $test_data"
-#ngramsymbols $test_data > test.txt
-#farcompilestrings --symbols=lex.txt --unknown_symbol="<unk>" $test_data > test.far
-#ngramperplexity --OOV_symbol="<unk>" text.lm test.far
+echo "[*] Computing perplexity on the given test dataset $test_data"
+ngramsymbols $test_data > perplexity.txt
+farcompilestrings --symbols=lexicon.txt --unknown_symbol="<unk>" $test_data > perplexity.far
+ngramperplexity --OOV_symbol="<unk>" pos.lm perplexity.far
 
 # Clean the directory from the generated files
 #rm lex.txt text.far text.cnts text.lm text_reduced.cnts test.txt test.far
