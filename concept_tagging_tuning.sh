@@ -1,4 +1,12 @@
 #!/bin/bash
+# -----------------------------------------------------------
+# Run the hyperparameters search procedure and generate a
+# final file with all the k-fold crossvalidation results.
+#
+# (C) 2020 Giovanni De Toni, Trento, Italy
+# Released under MIT License
+# email giovanni.detoni@studenti.unitn.it
+# -----------------------------------------------------------
 
 REPLACE=("keep" "word" "lemma" "stem")
 SPACY=("none" "spacy" "nltk")
