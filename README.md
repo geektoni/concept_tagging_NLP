@@ -38,6 +38,15 @@ make evaluate
 Inside the `evaluation_results` directory you will find the evaluation results
 over the test set.
 
+To run the complete hyperparameter search procedure, please follow the following instructions:
+```bash
+cd concept_tagging_NLP
+conda activate ctnlp
+bash concept_tagging_tuning.sh
+```
+This will generate a file called `complete_results.txt` with all the evaluations. Be aware that the entire procedure
+take quite some time.
+
 By calling `make help` an help message will be generated.
 
 ## Advanced Usage
