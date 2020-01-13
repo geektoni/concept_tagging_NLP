@@ -24,6 +24,7 @@ cd concept_tagging_NLP
 conda create --name ctnlp --file requirements.txt
 conda activate ctnlp
 python -m spacy download en_core_web_sm
+git submodule update --init
 ```
 
 ## Usage
